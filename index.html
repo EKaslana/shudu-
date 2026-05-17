@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数独小游戏</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2733;
+      --muted: #647386;
+      --line: #c9d3df;
+      --heavy: #2f4056;
+      --paper: #f7f4ec;
+      --surface: #ffffff;
+      --accent: #1c8c7c;
+      --accent-strong: #0e6d61;
+      --warn: #b94b4b;
+      --given: #ecf1f7;
+      --selected: #b9eee3;
+      --related: #dcefe9;
+      --match: #fee8b8;
+      --shadow: 0 18px 45px rgba(34, 46, 62, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(28, 140, 124, 0.12), transparent 38%),
+        radial-gradient(circle at 85% 12%, rgba(255, 201, 92, 0.22), transparent 25%),
+        var(--paper);
+    }
+
+    main {
+      width: min(1160px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 34px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .subline {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 13px;
+      border: 1px solid rgba(47, 64, 86, 0.2);
+      background: rgba(255, 255, 255, 0.68);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 612px) minmax(280px, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .board-wrap,
+    .panel {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(47, 64, 86, 0.18);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .board-wrap {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(10px, 2vw, 18px);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      width: 100%;
+      aspect-ratio: 1;
+      border: 3px solid var(--heavy);
+      background: var(--heavy);
+      transition: opacity 160ms ease;
+    }
+
+    .board-wrap.paused .board {
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .pause-overlay {
+      position: absolute;
+      inset: clamp(10px, 2vw, 18px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--heavy);
+      background:
+        linear-gradient(135deg, rgba(28, 140, 124, 0.16), transparent 45%),
+        #eef5f1;
+      color: #153d38;
+      text-align: center;
+      font-size: clamp(24px, 5vw, 48px);
+      font-weight: 900;
+      z-index: 5;
+    }
+
+    .board-wrap.paused .pause-overlay {
+      display: flex;
+    }
+
+    .cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: #1f334c;
+      font: 700 clamp(18px, 5.8vw, 38px) / 1.1 ui-sans-serif, system-ui, sans-serif;
+      cursor: pointer;
+      user-select: none;
+      transition: background 120ms ease, box-shadow 120ms ease, color 120ms ease;
+    }
+
+    .cell:nth-child(3n) {
+      border-right-color: var(--heavy);
+      border-right-width: 2px;
+    }
+
+    .cell:nth-child(9n) {
+      border-right-width: 1px;
+    }
+
+    .cell:nth-child(n+19):nth-child(-n+27),
+    .cell:nth-child(n+46):nth-child(-n+54) {
+      border-bottom-color: var(--heavy);
+      border-bottom-width: 2px;
+    }
+
+    .cell.given {
+      background: var(--given);
+      color: #101820;
+      cursor: default;
+    }
+
+    .cell.related {
+      background: var(--related);
+      box-shadow: inset 0 0 0 2px rgba(28, 140, 124, 0.28);
+    }
+
+    .cell.selected {
+      background: var(--selected);
+      color: #0b3832;
+      outline: 4px solid var(--accent);
+      outline-offset: -4px;
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.85),
+        0 0 0 2px rgba(14, 109, 97, 0.2);
+      z-index: 2;
+    }
+
+    .cell.match {
+      background: var(--match);
+    }
+
+    .cell.error {
+      color: var(--warn);
+      background: #ffe9e6;
+    }
+
+    .notes {
+      position: absolute;
+      inset: 4px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 1px;
+      color: #6d7d8f;
+      font-size: clamp(8px, 1.7vw, 12px);
+      font-weight: 800;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .notes span {
+      display: grid;
+      place-items: center;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      min-height: 74px;
+      padding: 10px;
+      border: 1px solid rgba(47, 64, 86, 0.16);
+      background: rgba(247, 244, 236, 0.72);
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .value {
+      margin-top: 8px;
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .controls,
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .controls {
+      margin-bottom: 14px;
+    }
+
+    button,
+    select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid rgba(47, 64, 86, 0.22);
+      background: var(--surface);
+      color: var(--ink);
+      font: 800 14px / 1 system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover,
+    select:hover {
+      border-color: var(--accent);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    button.primary:hover {
+      background: var(--accent-strong);
+    }
+
+    button.active {
+      background: #ffe1a6;
+      border-color: #d99c2b;
+    }
+
+    button:disabled,
+    select:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    button svg {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+    }
+
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .num {
+      position: relative;
+      display: flex;
+      min-height: 72px;
+      padding: 6px 4px 12px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      border-color: #aebbd0;
+      border-radius: 12px;
+      background: #fbfcff;
+      color: #435372;
+    }
+
+    .num-digit {
+      font-size: clamp(32px, 4.2vw, 52px);
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .num-left {
+      color: #7f8fb1;
+      font-size: clamp(14px, 1.9vw, 21px);
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .num.complete {
+      background: #e9f1f7;
+      color: #738196;
+    }
+
+    .message {
+      min-height: 48px;
+      padding: 12px;
+      border-left: 4px solid var(--accent);
+      background: rgba(237, 248, 245, 0.9);
+      color: #284b45;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .message.win {
+      border-left-color: #d99c2b;
+      background: #fff2cf;
+      color: #674c14;
+    }
+
+    @media (max-width: 820px) {
+      main {
+        width: min(100vw - 18px, 620px);
+        padding-top: 16px;
+      }
+
+      .topbar,
+      .layout {
+        display: block;
+      }
+
+      .badge {
+        margin-top: 12px;
+      }
+
+      .panel {
+        margin-top: 14px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 430px) {
+      .subline {
+        font-size: 13px;
+      }
+
+      .stats,
+      .controls,
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .numbers {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .num {
+        min-height: 56px;
+        padding: 5px 2px 8px;
+      }
+
+      .num-digit {
+        font-size: 30px;
+      }
+
+      .num-left {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div>
+        <h1>数独</h1>
+        <p class="subline">填满九宫格，让每行、每列、每个 3x3 宫都包含 1 到 9。</p>
+      </div>
+      <div class="badge" aria-live="polite">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="2" d="M7 3h10M12 8v5l3 2m5-3a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/>
+        </svg>
+        <span id="timer">00:00</span>
+      </div>
+    </header>
+
+    <section class="layout" aria-label="数独游戏">
+      <div class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="数独棋盘"></div>
+        <div id="pauseOverlay" class="pause-overlay" role="status" aria-live="polite">已暂停</div>
+      </div>
+
+      <aside class="panel">
+        <div class="stats">
+          <div class="stat">
+            <div class="label">难度</div>
+            <div id="levelText" class="value">普通</div>
+          </div>
+          <div class="stat">
+            <div class="label">错误</div>
+            <div id="mistakes" class="value">0/3</div>
+          </div>
+          <div class="stat">
+            <div class="label">空格</div>
+            <div id="remaining" class="value">0</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <select id="difficulty" aria-label="选择难度">
+            <option value="easy">简单</option>
+            <option value="normal" selected>普通</option>
+            <option value="hard">困难</option>
+          </select>
+          <button id="newGame" class="primary" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M20 12a8 8 0 1 1-2.35-5.65M20 4v6h-6"/>
+            </svg>
+            新局
+          </button>
+          <button id="notesMode" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M4 20h16M6 16 17.5 4.5a2.1 2.1 0 0 1 3 3L9 19l-4 1 1-4Z"/>
+            </svg>
+            笔记
+          </button>
+          <button id="hint" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M9 18h6m-5 3h4m3-10a5 5 0 0 0-10 0c0 2 1.1 3.1 2 4h6c.9-.9 2-2 2-4Z"/>
+            </svg>
+            提示
+          </button>
+          <button id="pause" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M8 5v14M16 5v14"/>
+            </svg>
+            <span id="pauseLabel">暂停</span>
+          </button>
+        </div>
+
+        <div id="numbers" class="numbers" aria-label="数字输入"></div>
+
+        <div class="actions">
+          <button id="erase" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="m3 17 8-8 7 7-5 5H7l-4-4Zm8-8 3-3a2 2 0 0 1 3 0l4 4a2 2 0 0 1 0 3l-3 3"/>
+            </svg>
+            清除
+          </button>
+          <button id="check" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="m4 12 5 5L20 6"/>
+            </svg>
+            检查
+          </button>
+          <button id="reset" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.5 9A7 7 0 0 1 17 6.4M18.5 15A7 7 0 0 1 7 17.6"/>
+            </svg>
+            重置
+          </button>
+          <button id="solve" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M12 3 4 7v6c0 4 3.4 7.3 8 8 4.6-.7 8-4 8-8V7l-8-4Zm-3 9 2 2 4-5"/>
+            </svg>
+            答案
+          </button>
+        </div>
+
+        <p id="message" class="message" aria-live="polite">选择一个空格，然后输入数字。</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const boardEl = document.querySelector("#board");
+    const boardWrapEl = document.querySelector(".board-wrap");
+    const numbersEl = document.querySelector("#numbers");
+    const difficultyEl = document.querySelector("#difficulty");
+    const levelTextEl = document.querySelector("#levelText");
+    const mistakesEl = document.querySelector("#mistakes");
+    const remainingEl = document.querySelector("#remaining");
+    const timerEl = document.querySelector("#timer");
+    const messageEl = document.querySelector("#message");
+    const notesModeBtn = document.querySelector("#notesMode");
+    const pauseBtn = document.querySelector("#pause");
+    const pauseLabelEl = document.querySelector("#pauseLabel");
+    const pauseControlledEls = [
+      difficultyEl,
+      document.querySelector("#newGame"),
+      notesModeBtn,
+      document.querySelector("#hint"),
+      document.querySelector("#erase"),
+      document.querySelector("#check"),
+      document.querySelector("#reset"),
+      document.querySelector("#solve")
+    ];
+
+    const difficultyMap = {
+      easy: { label: "简单", blanks: 36 },
+      normal: { label: "普通", blanks: 46 },
+      hard: { label: "困难", blanks: 54 }
+    };
+    const maxMistakes = 3;
+
+    let puzzle = [];
+    let solution = [];
+    let current = [];
+    let given = [];
+    let notes = [];
+    let selectedIndex = 0;
+    let noteMode = false;
+    let paused = false;
+    let gameEnded = false;
+    let mistakes = 0;
+    let startTime = Date.now();
+    let elapsedBeforePause = 0;
+    let timerId = null;
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function pattern(row, col) {
+      return (row * 3 + Math.floor(row / 3) + col) % 9;
+    }
+
+    function makeSolution() {
+      const rowBands = shuffle([0, 1, 2]);
+      const rows = rowBands.flatMap((band) => shuffle([0, 1, 2]).map((row) => band * 3 + row));
+      const colBands = shuffle([0, 1, 2]);
+      const cols = colBands.flatMap((band) => shuffle([0, 1, 2]).map((col) => band * 3 + col));
+      const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      return rows.flatMap((row) => cols.map((col) => nums[pattern(row, col)]));
+    }
+
+    function makePuzzle(answer, blanks) {
+      const grid = [...answer];
+      shuffle([...Array(81).keys()]).slice(0, blanks).forEach((index) => {
+        grid[index] = 0;
+      });
+      return grid;
+    }
+
+    function sameUnit(a, b) {
+      const rowA = Math.floor(a / 9);
+      const colA = a % 9;
+      const rowB = Math.floor(b / 9);
+      const colB = b % 9;
+      return rowA === rowB || colA === colB ||
+        (Math.floor(rowA / 3) === Math.floor(rowB / 3) && Math.floor(colA / 3) === Math.floor(colB / 3));
+    }
+
+    function formatTime(ms) {
+      const seconds = Math.floor(ms / 1000);
+      const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const secs = String(seconds % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function setMessage(text, isWin = false) {
+      messageEl.textContent = text;
+      messageEl.classList.toggle("win", isWin);
+    }
+
+    function countRemaining() {
+      return current.filter((value) => value === 0).length;
+    }
+
+    function digitRemaining(number) {
+      const filledCount = current.filter((value) => value === number).length;
+      return Math.max(0, 9 - filledCount);
+    }
+
+    function buildUnits() {
+      const units = [];
+      for (let row = 0; row < 9; row += 1) {
+        units.push([...Array(9).keys()].map((col) => row * 9 + col));
+      }
+      for (let col = 0; col < 9; col += 1) {
+        units.push([...Array(9).keys()].map((row) => row * 9 + col));
+      }
+      for (let boxRow = 0; boxRow < 3; boxRow += 1) {
+        for (let boxCol = 0; boxCol < 3; boxCol += 1) {
+          const box = [];
+          for (let row = 0; row < 3; row += 1) {
+            for (let col = 0; col < 3; col += 1) {
+              box.push((boxRow * 3 + row) * 9 + boxCol * 3 + col);
+            }
+          }
+          units.push(box);
+        }
+      }
+      return units;
+    }
+
+    function conflictIndexes() {
+      const conflicts = new Set();
+      buildUnits().forEach((unit) => {
+        const seen = new Map();
+        unit.forEach((index) => {
+          const value = current[index];
+          if (!value) return;
+          if (!seen.has(value)) seen.set(value, []);
+          seen.get(value).push(index);
+        });
+        seen.forEach((indexes) => {
+          if (indexes.length > 1) {
+            indexes.forEach((index) => conflicts.add(index));
+          }
+        });
+      });
+      return conflicts;
+    }
+
+    function currentElapsed() {
+      if (timerId) {
+        return elapsedBeforePause + Date.now() - startTime;
+      }
+      return elapsedBeforePause;
+    }
+
+    function updateTimer() {
+      timerEl.textContent = formatTime(currentElapsed());
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      startTime = Date.now();
+      timerId = setInterval(updateTimer, 250);
+      updateTimer();
+    }
+
+    function stopTimer() {
+      if (timerId) {
+        elapsedBeforePause += Date.now() - startTime;
+        clearInterval(timerId);
+        timerId = null;
+      }
+      updateTimer();
+    }
+
+    function setPaused(nextPaused) {
+      if (gameEnded) return;
+      paused = nextPaused;
+      if (paused) {
+        stopTimer();
+        setMessage("游戏已暂停，继续后才能查看和编辑棋盘。");
+      } else {
+        startTimer();
+        setMessage("游戏继续。");
+      }
+      boardWrapEl.classList.toggle("paused", paused);
+      boardEl.setAttribute("aria-hidden", paused ? "true" : "false");
+      pauseBtn.classList.toggle("active", paused);
+      pauseBtn.setAttribute("aria-pressed", String(paused));
+      pauseLabelEl.textContent = paused ? "继续" : "暂停";
+      pauseControlledEls.forEach((element) => {
+        element.disabled = paused;
+      });
+      numbersEl.querySelectorAll("button").forEach((button) => {
+        button.disabled = paused;
+      });
+    }
+
+    function renderBoard() {
+      const conflicts = conflictIndexes();
+      boardEl.innerHTML = "";
+      current.forEach((value, index) => {
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "cell";
+        cell.setAttribute("role", "gridcell");
+        cell.setAttribute("aria-label", `第 ${Math.floor(index / 9) + 1} 行第 ${index % 9 + 1} 列`);
+        cell.dataset.index = index;
+
+        if (given[index]) cell.classList.add("given");
+        if (selectedIndex === index) cell.classList.add("selected");
+        if (sameUnit(selectedIndex, index) && selectedIndex !== index) cell.classList.add("related");
+        if (value !== 0 && value === current[selectedIndex]) cell.classList.add("match");
+        if (conflicts.has(index)) cell.classList.add("error");
+
+        if (value) {
+          cell.textContent = value;
+        } else if (notes[index].size) {
+          const noteGrid = document.createElement("div");
+          noteGrid.className = "notes";
+          for (let number = 1; number <= 9; number += 1) {
+            const span = document.createElement("span");
+            span.textContent = notes[index].has(number) ? number : "";
+            noteGrid.append(span);
+          }
+          cell.append(noteGrid);
+        }
+
+        cell.addEventListener("click", () => {
+          if (paused) return;
+          selectedIndex = index;
+          renderBoard();
+        });
+        boardEl.append(cell);
+      });
+
+      mistakesEl.textContent = `${mistakes}/${maxMistakes}`;
+      remainingEl.textContent = countRemaining();
+      updateNumberCounters();
+    }
+
+    function renderNumbers() {
+      numbersEl.innerHTML = "";
+      for (let number = 1; number <= 9; number += 1) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "num";
+        button.dataset.number = number;
+        button.innerHTML = `<span class="num-digit">${number}</span><span class="num-left">9</span>`;
+        button.addEventListener("click", () => placeNumber(number));
+        numbersEl.append(button);
+      }
+      updateNumberCounters();
+    }
+
+    function updateNumberCounters() {
+      numbersEl.querySelectorAll(".num").forEach((button) => {
+        const number = Number(button.dataset.number);
+        const left = digitRemaining(number);
+        button.querySelector(".num-left").textContent = left;
+        button.classList.toggle("complete", left === 0);
+        button.setAttribute("aria-label", `数字 ${number}，还差 ${left} 个完成`);
+      });
+    }
+
+    function placeNumber(number) {
+      if (paused || gameEnded) return;
+      if (given[selectedIndex]) {
+        setMessage("这个格子是题目数字，不能修改。");
+        return;
+      }
+
+      if (noteMode) {
+        current[selectedIndex] = 0;
+        if (notes[selectedIndex].has(number)) {
+          notes[selectedIndex].delete(number);
+        } else {
+          notes[selectedIndex].add(number);
+        }
+        setMessage("笔记已更新。");
+        renderBoard();
+        return;
+      }
+
+      notes[selectedIndex].clear();
+      const previousValue = current[selectedIndex];
+      current[selectedIndex] = number;
+      const hasConflict = conflictIndexes().has(selectedIndex);
+      if (hasConflict) {
+        if (previousValue !== number) {
+          mistakes += 1;
+          if (mistakes > maxMistakes) {
+            renderBoard();
+            failGame();
+            return;
+          }
+        }
+        setMessage(`这一行、列或九宫格里已经有 ${number}，错误 ${mistakes}/${maxMistakes}。`);
+      } else {
+        removeNoteFromPeers(selectedIndex, number);
+        setMessage("已填入，当前没有明错误。");
+      }
+
+      renderBoard();
+      checkWin();
+    }
+
+    function removeNoteFromPeers(index, number) {
+      notes.forEach((set, peerIndex) => {
+        if (sameUnit(index, peerIndex)) {
+          set.delete(number);
+        }
+      });
+    }
+
+    function eraseSelected() {
+      if (paused || gameEnded) return;
+      if (given[selectedIndex]) {
+        setMessage("题目数字保留原样。");
+        return;
+      }
+      current[selectedIndex] = 0;
+      notes[selectedIndex].clear();
+      setMessage("已清除当前格。");
+      renderBoard();
+    }
+
+    function giveHint() {
+      if (paused || gameEnded) return;
+      const emptyIndexes = current
+        .map((value, index) => value === 0 ? index : -1)
+        .filter((index) => index !== -1);
+
+      if (!emptyIndexes.length) {
+        checkWin();
+        return;
+      }
+
+      selectedIndex = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+      current[selectedIndex] = solution[selectedIndex];
+      notes[selectedIndex].clear();
+      removeNoteFromPeers(selectedIndex, current[selectedIndex]);
+      setMessage("已填入一个提示。");
+      renderBoard();
+      checkWin();
+    }
+
+    function checkBoard() {
+      if (paused || gameEnded) return;
+      const conflicts = conflictIndexes();
+      const remaining = countRemaining();
+      if (!conflicts.size && remaining === 0) {
+        winGame();
+      } else if (!conflicts.size) {
+        setMessage(`目前没有明错误，还剩 ${remaining} 格。`);
+      } else {
+        setMessage("棋盘里有重复冲突，标红数字需要调整。");
+      }
+      renderBoard();
+    }
+
+    function isCompleteValidBoard() {
+      return countRemaining() === 0 && conflictIndexes().size === 0;
+    }
+
+    function checkWin() {
+      if (isCompleteValidBoard()) winGame();
+    }
+
+    function winGame() {
+      gameEnded = true;
+      paused = false;
+      stopTimer();
+      boardWrapEl.classList.remove("paused");
+      pauseBtn.classList.remove("active");
+      pauseBtn.disabled = true;
+      setMessage(`完成！用时 ${timerEl.textContent}，错误 ${mistakes}/${maxMistakes}。`, true);
+    }
+
+    function failGame() {
+      gameEnded = true;
+      paused = false;
+      stopTimer();
+      boardWrapEl.classList.remove("paused");
+      boardEl.setAttribute("aria-hidden", "false");
+      pauseBtn.classList.remove("active");
+      pauseBtn.setAttribute("aria-pressed", "false");
+      pauseLabelEl.textContent = "暂停";
+      pauseControlledEls.forEach((element) => {
+        element.disabled = element.id !== "newGame" && element.id !== "difficulty";
+      });
+      pauseBtn.disabled = true;
+      numbersEl.querySelectorAll("button").forEach((button) => {
+        button.disabled = true;
+      });
+      setMessage("失败：明错误已超过 3 次，只能重新开局。", true);
+    }
+
+    function resetGame() {
+      if (paused || gameEnded) return;
+      current = [...puzzle];
+      notes = Array.from({ length: 81 }, () => new Set());
+      mistakes = 0;
+      gameEnded = false;
+      selectedIndex = puzzle.findIndex((value) => value === 0);
+      if (selectedIndex < 0) selectedIndex = 0;
+      elapsedBeforePause = 0;
+      pauseBtn.disabled = false;
+      boardWrapEl.classList.remove("paused");
+      boardEl.setAttribute("aria-hidden", "false");
+      pauseBtn.classList.remove("active");
+      pauseBtn.setAttribute("aria-pressed", "false");
+      pauseLabelEl.textContent = "暂停";
+      startTimer();
+      setMessage("棋盘已重置。");
+      renderBoard();
+    }
+
+    function solveGame() {
+      if (paused || gameEnded) return;
+      current = [...solution];
+      notes = Array.from({ length: 81 }, () => new Set());
+      gameEnded = true;
+      paused = false;
+      stopTimer();
+      boardWrapEl.classList.remove("paused");
+      pauseBtn.classList.remove("active");
+      pauseBtn.disabled = true;
+      setMessage("答案已显示。", true);
+      renderBoard();
+    }
+
+    function newGame() {
+      const difficulty = difficultyMap[difficultyEl.value];
+      solution = makeSolution();
+      puzzle = makePuzzle(solution, difficulty.blanks);
+      current = [...puzzle];
+      given = puzzle.map(Boolean);
+      notes = Array.from({ length: 81 }, () => new Set());
+      mistakes = 0;
+      noteMode = false;
+      paused = false;
+      gameEnded = false;
+      elapsedBeforePause = 0;
+      selectedIndex = puzzle.findIndex((value) => value === 0);
+      levelTextEl.textContent = difficulty.label;
+      timerEl.textContent = "00:00";
+      pauseBtn.disabled = false;
+      pauseControlledEls.forEach((element) => {
+        element.disabled = false;
+      });
+      boardWrapEl.classList.remove("paused");
+      boardEl.setAttribute("aria-hidden", "false");
+      notesModeBtn.classList.remove("active");
+      pauseBtn.classList.remove("active");
+      pauseBtn.setAttribute("aria-pressed", "false");
+      pauseLabelEl.textContent = "暂停";
+      numbersEl.querySelectorAll("button").forEach((button) => {
+        button.disabled = false;
+      });
+      startTimer();
+      setMessage("选择一个空格，然后输入数字。");
+      renderBoard();
+    }
+
+    notesModeBtn.addEventListener("click", () => {
+      if (paused || gameEnded) return;
+      noteMode = !noteMode;
+      notesModeBtn.classList.toggle("active", noteMode);
+      setMessage(noteMode ? "笔记模式已开启。" : "笔记模式已关闭。");
+    });
+
+    document.querySelector("#newGame").addEventListener("click", newGame);
+    document.querySelector("#hint").addEventListener("click", giveHint);
+    document.querySelector("#erase").addEventListener("click", eraseSelected);
+    document.querySelector("#check").addEventListener("click", checkBoard);
+    document.querySelector("#reset").addEventListener("click", resetGame);
+    document.querySelector("#solve").addEventListener("click", solveGame);
+    pauseBtn.addEventListener("click", () => setPaused(!paused));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key.toLowerCase() === "p") {
+        setPaused(!paused);
+        return;
+      }
+      if (paused || gameEnded) return;
+      if (/^[1-9]$/.test(event.key)) {
+        placeNumber(Number(event.key));
+      }
+      if (event.key === "Backspace" || event.key === "Delete" || event.key === "0") {
+        eraseSelected();
+      }
+      if (event.key === "ArrowUp") selectedIndex = Math.max(0, selectedIndex - 9);
+      if (event.key === "ArrowDown") selectedIndex = Math.min(80, selectedIndex + 9);
+      if (event.key === "ArrowLeft") selectedIndex = Math.max(0, selectedIndex - 1);
+      if (event.key === "ArrowRight") selectedIndex = Math.min(80, selectedIndex + 1);
+      if (event.key.startsWith("Arrow")) renderBoard();
+    });
+
+    renderNumbers();
+    newGame();
+  </script>
+</body>
+</html>

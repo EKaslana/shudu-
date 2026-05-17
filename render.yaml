@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: shudu
+    runtime: static
+    buildCommand: echo "Static site ready"
+    staticPublishPath: .
