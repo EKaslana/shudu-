@@ -38,6 +38,20 @@
         var(--paper);
     }
 
+    .mode-toggle {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 20;
+      width: auto;
+      min-height: 34px;
+      padding: 0 12px;
+      border-color: rgba(47, 64, 86, 0.24);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 8px 22px rgba(34, 46, 62, 0.12);
+      font-size: 13px;
+    }
+
     main {
       width: min(1160px, calc(100vw - 32px));
       margin: 0 auto;
@@ -269,6 +283,10 @@
       margin-bottom: 14px;
     }
 
+    .mobile-quick-actions {
+      display: none;
+    }
+
     button,
     select {
       width: 100%;
@@ -427,9 +445,149 @@
         font-size: 13px;
       }
     }
+
+    body.mobile-mode main {
+      width: min(100vw - 12px, 540px);
+      padding-top: 50px;
+    }
+
+    body.mobile-mode .topbar {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    body.mobile-mode h1 {
+      font-size: 40px;
+    }
+
+    body.mobile-mode .subline {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    body.mobile-mode .badge {
+      height: 34px;
+      padding: 0 10px;
+    }
+
+    body.mobile-mode .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    body.mobile-mode .board-wrap {
+      padding: 8px;
+    }
+
+    body.mobile-mode .panel {
+      display: grid;
+      gap: 8px;
+      margin-top: 0;
+      padding: 8px;
+      box-shadow: none;
+    }
+
+    body.mobile-mode .numbers {
+      order: 1;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 4px;
+      margin: 0;
+    }
+
+    body.mobile-mode .num {
+      min-height: 48px;
+      padding: 4px 1px 6px;
+      border-radius: 8px;
+    }
+
+    body.mobile-mode .num-digit {
+      font-size: 26px;
+    }
+
+    body.mobile-mode .num-left {
+      font-size: 11px;
+    }
+
+    body.mobile-mode .mobile-quick-actions {
+      order: 2;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    body.mobile-mode .mobile-quick-actions button,
+    body.mobile-mode .controls button,
+    body.mobile-mode .actions button,
+    body.mobile-mode .controls select {
+      min-height: 36px;
+      padding: 0 6px;
+      font-size: 12px;
+      gap: 4px;
+    }
+
+    body.mobile-mode .mobile-quick-actions svg,
+    body.mobile-mode .controls svg,
+    body.mobile-mode .actions svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    body.mobile-mode .controls {
+      order: 3;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin: 0;
+    }
+
+    body.mobile-mode .controls #notesMode,
+    body.mobile-mode .controls #hint,
+    body.mobile-mode .controls #pause {
+      display: none;
+    }
+
+    body.mobile-mode .actions {
+      order: 4;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    body.mobile-mode .actions #erase {
+      display: none;
+    }
+
+    body.mobile-mode .stats {
+      order: 5;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin: 0;
+    }
+
+    body.mobile-mode .stat {
+      min-height: 52px;
+      padding: 7px;
+    }
+
+    body.mobile-mode .value {
+      margin-top: 5px;
+      font-size: 20px;
+    }
+
+    body.mobile-mode .message {
+      order: 6;
+      min-height: 42px;
+      padding: 10px;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
+  <button id="modeToggle" class="mode-toggle" type="button" aria-pressed="false">手机版</button>
   <main>
     <header class="topbar">
       <div>
@@ -500,6 +658,33 @@
 
         <div id="numbers" class="numbers" aria-label="数字输入"></div>
 
+        <div class="mobile-quick-actions" aria-label="手机版快捷操作">
+          <button id="mobileNotes" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M4 20h16M6 16 17.5 4.5a2.1 2.1 0 0 1 3 3L9 19l-4 1 1-4Z"/>
+            </svg>
+            笔记
+          </button>
+          <button id="mobileHint" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M9 18h6m-5 3h4m3-10a5 5 0 0 0-10 0c0 2 1.1 3.1 2 4h6c.9-.9 2-2 2-4Z"/>
+            </svg>
+            提示
+          </button>
+          <button id="mobilePause" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M8 5v14M16 5v14"/>
+            </svg>
+            <span id="mobilePauseLabel">暂停</span>
+          </button>
+          <button id="mobileErase" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="m3 17 8-8 7 7-5 5H7l-4-4Zm8-8 3-3a2 2 0 0 1 3 0l4 4a2 2 0 0 1 0 3l-3 3"/>
+            </svg>
+            清除
+          </button>
+        </div>
+
         <div class="actions">
           <button id="erase" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -533,6 +718,7 @@
   </main>
 
   <script>
+    const modeToggleBtn = document.querySelector("#modeToggle");
     const boardEl = document.querySelector("#board");
     const boardWrapEl = document.querySelector(".board-wrap");
     const numbersEl = document.querySelector("#numbers");
@@ -545,6 +731,11 @@
     const notesModeBtn = document.querySelector("#notesMode");
     const pauseBtn = document.querySelector("#pause");
     const pauseLabelEl = document.querySelector("#pauseLabel");
+    const mobileNotesBtn = document.querySelector("#mobileNotes");
+    const mobileHintBtn = document.querySelector("#mobileHint");
+    const mobilePauseBtn = document.querySelector("#mobilePause");
+    const mobilePauseLabelEl = document.querySelector("#mobilePauseLabel");
+    const mobileEraseBtn = document.querySelector("#mobileErase");
     const pauseControlledEls = [
       difficultyEl,
       document.querySelector("#newGame"),
@@ -553,7 +744,10 @@
       document.querySelector("#erase"),
       document.querySelector("#check"),
       document.querySelector("#reset"),
-      document.querySelector("#solve")
+      document.querySelector("#solve"),
+      mobileNotesBtn,
+      mobileHintBtn,
+      mobileEraseBtn
     ];
 
     const difficultyMap = {
@@ -576,6 +770,22 @@
     let startTime = Date.now();
     let elapsedBeforePause = 0;
     let timerId = null;
+
+    function setInterfaceMode(mode) {
+      const mobile = mode === "mobile";
+      document.body.classList.toggle("mobile-mode", mobile);
+      modeToggleBtn.textContent = mobile ? "电脑版" : "手机版";
+      modeToggleBtn.setAttribute("aria-pressed", String(mobile));
+      localStorage.setItem("sudokuInterfaceMode", mobile ? "mobile" : "desktop");
+    }
+
+    function syncMobileControls() {
+      mobileNotesBtn.classList.toggle("active", noteMode);
+      mobilePauseBtn.classList.toggle("active", paused);
+      mobilePauseBtn.disabled = pauseBtn.disabled;
+      mobilePauseBtn.setAttribute("aria-pressed", String(paused));
+      mobilePauseLabelEl.textContent = paused ? "继续" : "暂停";
+    }
 
     function shuffle(items) {
       const copy = [...items];
@@ -798,6 +1008,7 @@
       numbersEl.querySelectorAll("button").forEach((button) => {
         button.disabled = paused;
       });
+      syncMobileControls();
     }
 
     function renderBoard() {
@@ -982,6 +1193,7 @@
       boardWrapEl.classList.remove("paused");
       pauseBtn.classList.remove("active");
       pauseBtn.disabled = true;
+      syncMobileControls();
       setMessage(`完成！用时 ${timerEl.textContent}，错误 ${mistakes}/${maxMistakes}。`, true);
     }
 
@@ -1001,6 +1213,7 @@
       numbersEl.querySelectorAll("button").forEach((button) => {
         button.disabled = true;
       });
+      syncMobileControls();
       setMessage("失败：明错误已超过 3 次，只能重新开局。", true);
     }
 
@@ -1019,6 +1232,7 @@
       pauseBtn.classList.remove("active");
       pauseBtn.setAttribute("aria-pressed", "false");
       pauseLabelEl.textContent = "暂停";
+      syncMobileControls();
       startTimer();
       setMessage("棋盘已重置。");
       renderBoard();
@@ -1034,6 +1248,7 @@
       boardWrapEl.classList.remove("paused");
       pauseBtn.classList.remove("active");
       pauseBtn.disabled = true;
+      syncMobileControls();
       setMessage("答案已显示。", true);
       renderBoard();
     }
@@ -1066,6 +1281,7 @@
       numbersEl.querySelectorAll("button").forEach((button) => {
         button.disabled = false;
       });
+      syncMobileControls();
       startTimer();
       setMessage("选择一个空格，然后输入数字。");
       renderBoard();
@@ -1075,9 +1291,13 @@
       if (paused || gameEnded) return;
       noteMode = !noteMode;
       notesModeBtn.classList.toggle("active", noteMode);
+      syncMobileControls();
       setMessage(noteMode ? "笔记模式已开启。" : "笔记模式已关闭。");
     });
 
+    modeToggleBtn.addEventListener("click", () => {
+      setInterfaceMode(document.body.classList.contains("mobile-mode") ? "desktop" : "mobile");
+    });
     document.querySelector("#newGame").addEventListener("click", newGame);
     document.querySelector("#hint").addEventListener("click", giveHint);
     document.querySelector("#erase").addEventListener("click", eraseSelected);
@@ -1085,6 +1305,10 @@
     document.querySelector("#reset").addEventListener("click", resetGame);
     document.querySelector("#solve").addEventListener("click", solveGame);
     pauseBtn.addEventListener("click", () => setPaused(!paused));
+    mobileNotesBtn.addEventListener("click", () => notesModeBtn.click());
+    mobileHintBtn.addEventListener("click", giveHint);
+    mobilePauseBtn.addEventListener("click", () => setPaused(!paused));
+    mobileEraseBtn.addEventListener("click", eraseSelected);
 
     document.addEventListener("keydown", (event) => {
       if (event.key.toLowerCase() === "p") {
@@ -1105,6 +1329,7 @@
       if (event.key.startsWith("Arrow")) renderBoard();
     });
 
+    setInterfaceMode(localStorage.getItem("sudokuInterfaceMode") === "mobile" ? "mobile" : "desktop");
     renderNumbers();
     newGame();
   </script>
