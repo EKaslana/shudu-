@@ -59,10 +59,6 @@
     }
 
     .topbar {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 18px;
       margin-bottom: 18px;
     }
 
@@ -82,6 +78,7 @@
     .badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       height: 38px;
       padding: 0 13px;
@@ -245,46 +242,84 @@
       padding: 18px;
     }
 
-    .stats {
+    .editor-controls {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 8px;
     }
 
-    .stat {
-      min-height: 74px;
-      padding: 10px;
-      border: 1px solid rgba(47, 64, 86, 0.16);
+    .control-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .control-item {
+      width: 100%;
+      height: 48px;
+      min-height: 48px;
+    }
+
+    .status-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 8px;
+      border: 1px solid rgba(47, 64, 86, 0.22);
       background: rgba(247, 244, 236, 0.72);
+      color: var(--ink);
+      font: 800 14px / 1 system-ui, sans-serif;
+      white-space: nowrap;
     }
 
-    .label {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
+    .status-value {
+      font-size: 17px;
+      font-weight: 900;
     }
 
-    .value {
-      margin-top: 8px;
-      font-size: 25px;
-      font-weight: 800;
-      line-height: 1;
+    .mode-stat {
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .controls,
-    .actions {
+    .mode-stat .status-value {
+      font-size: 18px;
+    }
+
+    .rules-panel {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid rgba(47, 64, 86, 0.18);
+      background: rgba(237, 248, 245, 0.9);
+      color: #284b45;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .rules-panel[hidden] {
+      display: none;
+    }
+
+    .rules-title {
+      margin: 0;
+      color: #153d38;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .rules-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 6px 10px;
     }
 
-    .controls {
-      margin-bottom: 14px;
+    .rule-item {
+      min-width: 0;
     }
 
-    .mobile-quick-actions {
-      display: none;
+    .rule-item strong {
+      color: var(--ink);
     }
 
     button,
@@ -296,6 +331,11 @@
       color: var(--ink);
       font: 800 14px / 1 system-ui, sans-serif;
       cursor: pointer;
+    }
+
+    select {
+      text-align: center;
+      text-align-last: center;
     }
 
     button {
@@ -404,28 +444,14 @@
         display: block;
       }
 
-      .badge {
-        margin-top: 12px;
-      }
-
       .panel {
         margin-top: 14px;
-      }
-
-      .stats {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
     @media (max-width: 430px) {
       .subline {
         font-size: 13px;
-      }
-
-      .stats,
-      .controls,
-      .actions {
-        grid-template-columns: 1fr;
       }
 
       .numbers {
@@ -452,9 +478,6 @@
     }
 
     body.mobile-mode .topbar {
-      display: flex;
-      align-items: end;
-      gap: 10px;
       margin-bottom: 10px;
     }
 
@@ -466,11 +489,6 @@
       margin-top: 6px;
       font-size: 13px;
       line-height: 1.35;
-    }
-
-    body.mobile-mode .badge {
-      height: 34px;
-      padding: 0 10px;
     }
 
     body.mobile-mode .layout {
@@ -518,92 +536,89 @@
       font-size: 11px;
     }
 
-    body.mobile-mode .mobile-quick-actions {
+    body.mobile-mode .editor-controls {
       order: 2;
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 6px;
     }
 
-    body.mobile-mode .mobile-quick-actions .badge {
-      width: 100%;
+    body.mobile-mode .control-row {
+      gap: 6px;
+    }
+
+    body.mobile-mode .control-item,
+    body.mobile-mode .status-box {
       height: 36px;
       min-height: 36px;
       padding: 0 4px;
       gap: 4px;
-      justify-content: center;
-      border-color: rgba(47, 64, 86, 0.22);
-      background: var(--surface);
-      box-shadow: none;
       font-size: 13px;
     }
 
-    body.mobile-mode .mobile-quick-actions .badge svg {
+    body.mobile-mode .status-value,
+    body.mobile-mode .mode-stat .status-value {
+      font-size: 14px;
+    }
+
+    body.mobile-mode .rules-panel {
+      padding: 9px;
+      font-size: 12px;
+    }
+
+    body.mobile-mode .rules-grid {
+      grid-template-columns: 1fr;
+      gap: 5px;
+    }
+
+    body.mobile-mode .editor-controls .control-row:nth-of-type(1) {
+      order: 4;
+    }
+
+    body.mobile-mode .editor-controls .control-row:nth-of-type(2) {
+      order: 1;
+    }
+
+    body.mobile-mode .editor-controls .control-row:nth-of-type(3) {
+      order: 2;
+    }
+
+    body.mobile-mode .editor-controls .control-row:nth-of-type(4) {
+      order: 3;
+    }
+
+    body.mobile-mode .editor-controls .control-row:nth-of-type(5) {
+      order: 5;
+    }
+
+    body.mobile-mode .rules-panel {
+      order: 6;
+    }
+
+    body.mobile-mode .editor-controls .badge {
+      margin: 0;
+      box-shadow: none;
+    }
+
+    body.mobile-mode .editor-controls .badge svg {
       width: 14px;
       height: 14px;
     }
 
-    body.mobile-mode .mobile-quick-actions button,
-    body.mobile-mode .controls button,
-    body.mobile-mode .actions button,
-    body.mobile-mode .controls select {
+    body.mobile-mode .editor-controls button,
+    body.mobile-mode .editor-controls select {
       min-height: 36px;
       padding: 0 6px;
       font-size: 12px;
       gap: 4px;
     }
 
-    body.mobile-mode .mobile-quick-actions svg,
-    body.mobile-mode .controls svg,
-    body.mobile-mode .actions svg {
+    body.mobile-mode .editor-controls svg {
       width: 14px;
       height: 14px;
     }
 
-    body.mobile-mode .controls {
-      order: 3;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 6px;
-      margin: 0;
-    }
-
-    body.mobile-mode .controls #notesMode,
-    body.mobile-mode .controls #hint,
-    body.mobile-mode .controls #pause {
-      display: none;
-    }
-
-    body.mobile-mode .actions {
-      order: 4;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-    }
-
-    body.mobile-mode .actions #erase {
-      display: none;
-    }
-
-    body.mobile-mode .stats {
-      order: 5;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-      margin: 0;
-    }
-
-    body.mobile-mode .stat {
-      min-height: 52px;
-      padding: 7px;
-    }
-
-    body.mobile-mode .value {
-      margin-top: 5px;
-      font-size: 20px;
-    }
-
     body.mobile-mode .message {
-      order: 6;
+      order: 0;
       min-height: 42px;
       padding: 10px;
       font-size: 13px;
@@ -611,18 +626,12 @@
   </style>
 </head>
 <body>
-  <button id="modeToggle" class="mode-toggle" type="button" aria-pressed="false">手机版</button>
+  <button id="modeToggle" class="mode-toggle" type="button" aria-pressed="false">点击切换为手机版</button>
   <main>
     <header class="topbar">
       <div>
         <h1>数独</h1>
         <p class="subline">填满九宫格，让每行、每列、每个 3x3 宫都包含 1 到 9。</p>
-      </div>
-      <div class="badge" aria-live="polite">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="none" stroke="currentColor" stroke-width="2" d="M7 3h10M12 8v5l3 2m5-3a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/>
-        </svg>
-        <span id="timer">00:00</span>
       </div>
     </header>
 
@@ -633,148 +642,153 @@
       </div>
 
       <aside class="panel">
-        <div class="stats">
-          <div class="stat">
-            <div class="label">难度</div>
-            <div id="levelText" class="value">普通</div>
-          </div>
-          <div class="stat">
-            <div class="label">错误</div>
-            <div id="mistakes" class="value">0/3</div>
-          </div>
-          <div class="stat">
-            <div class="label">空格</div>
-            <div id="remaining" class="value">0</div>
-          </div>
-        </div>
-
-        <div class="controls">
-          <select id="difficulty" aria-label="选择难度">
-            <option value="easy">简单</option>
-            <option value="normal" selected>普通</option>
-            <option value="hard">困难</option>
-          </select>
-          <button id="newGame" class="primary" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M20 12a8 8 0 1 1-2.35-5.65M20 4v6h-6"/>
-            </svg>
-            新局
-          </button>
-          <button id="notesMode" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M4 20h16M6 16 17.5 4.5a2.1 2.1 0 0 1 3 3L9 19l-4 1 1-4Z"/>
-            </svg>
-            笔记
-          </button>
-          <button id="hint" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M9 18h6m-5 3h4m3-10a5 5 0 0 0-10 0c0 2 1.1 3.1 2 4h6c.9-.9 2-2 2-4Z"/>
-            </svg>
-            提示
-          </button>
-          <button id="pause" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M8 5v14M16 5v14"/>
-            </svg>
-            <span id="pauseLabel">暂停</span>
-          </button>
-        </div>
+        <p id="message" class="message" aria-live="polite">选择一个空格，然后输入数字。</p>
 
         <div id="numbers" class="numbers" aria-label="数字输入"></div>
 
-        <div class="mobile-quick-actions" aria-label="手机版快捷操作">
-          <button id="mobileNotes" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M4 20h16M6 16 17.5 4.5a2.1 2.1 0 0 1 3 3L9 19l-4 1 1-4Z"/>
-            </svg>
-            笔记
-          </button>
-          <button id="mobileHint" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M9 18h6m-5 3h4m3-10a5 5 0 0 0-10 0c0 2 1.1 3.1 2 4h6c.9-.9 2-2 2-4Z"/>
-            </svg>
-            提示
-          </button>
-          <button id="mobilePause" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M8 5v14M16 5v14"/>
-            </svg>
-            <span id="mobilePauseLabel">暂停</span>
-          </button>
-          <button id="mobileErase" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="m3 17 8-8 7 7-5 5H7l-4-4Zm8-8 3-3a2 2 0 0 1 3 0l4 4a2 2 0 0 1 0 3l-3 3"/>
-            </svg>
-            清除
-          </button>
+        <div class="editor-controls" aria-label="编辑栏">
+          <div class="control-row">
+            <select id="difficulty" class="control-item" aria-label="选择难度">
+              <option value="easy">简单</option>
+              <option value="normal" selected>普通</option>
+              <option value="hard">困难</option>
+            </select>
+            <button id="newGame" class="primary control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M20 12a8 8 0 1 1-2.35-5.65M20 4v6h-6"/>
+              </svg>
+              新局
+            </button>
+            <button id="reset" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.5 9A7 7 0 0 1 17 6.4M18.5 15A7 7 0 0 1 7 17.6"/>
+              </svg>
+              重置
+            </button>
+          </div>
+          <div class="control-row">
+            <div class="status-box control-item" aria-live="polite">
+              错误 <span id="mistakes" class="status-value">0/3</span>
+            </div>
+            <button id="pause" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M8 5v14M16 5v14"/>
+              </svg>
+              <span id="pauseLabel">暂停</span>
+            </button>
+            <div class="badge control-item" aria-live="polite">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M7 3h10M12 8v5l3 2m5-3a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/>
+              </svg>
+              <span id="timer">00:00</span>
+            </div>
+          </div>
+          <div class="control-row">
+            <button id="hint" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M9 18h6m-5 3h4m3-10a5 5 0 0 0-10 0c0 2 1.1 3.1 2 4h6c.9-.9 2-2 2-4Z"/>
+              </svg>
+              提示
+            </button>
+            <button id="erase" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="m3 17 8-8 7 7-5 5H7l-4-4Zm8-8 3-3a2 2 0 0 1 3 0l4 4a2 2 0 0 1 0 3l-3 3"/>
+              </svg>
+              清除
+            </button>
+            <button id="undo" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-2"/>
+              </svg>
+              撤销
+            </button>
+          </div>
+          <div class="control-row">
+            <button id="notesMode" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M4 20h16M6 16 17.5 4.5a2.1 2.1 0 0 1 3 3L9 19l-4 1 1-4Z"/>
+              </svg>
+              标记
+            </button>
+            <button id="saveGame" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M5 3h12l2 2v16H5V3Zm3 0v6h8V3M8 18h8"/>
+              </svg>
+              存档
+            </button>
+            <button id="loadGame" class="control-item" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M12 5v9m0 0 4-4m-4 4-4-4M5 19h14"/>
+              </svg>
+              读档
+            </button>
+          </div>
+          <div class="control-row">
+            <div class="status-box mode-stat control-item">
+              <span>已通关</span>
+              <span id="completedCount" class="status-value">0</span>
+            </div>
+            <div class="status-box mode-stat control-item">
+              <span>平均用时</span>
+              <span id="averageTime" class="status-value">--:--</span>
+            </div>
+            <button id="rulesToggle" class="control-item" type="button" aria-expanded="true" aria-controls="rulesPanel">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M4 5h16M4 12h16M4 19h10"/>
+              </svg>
+              规则说明
+            </button>
+          </div>
+          <div id="rulesPanel" class="rules-panel" role="region" aria-label="规则说明">
+            <p class="rules-title">按钮功能</p>
+            <div class="rules-grid">
+              <div class="rule-item"><strong>难度</strong>：选择简单、普通、困难。</div>
+              <div class="rule-item"><strong>新局</strong>：按当前难度生成新棋盘。</div>
+              <div class="rule-item"><strong>重置</strong>：回到本局初始棋盘。</div>
+              <div class="rule-item"><strong>错误</strong>：显示明错误次数，超过 3 次失败。</div>
+              <div class="rule-item"><strong>暂停</strong>：暂停计时并隐藏棋盘。</div>
+              <div class="rule-item"><strong>计时</strong>：显示本局已用时间。</div>
+              <div class="rule-item"><strong>提示</strong>：填入当前选中空白格的数字。</div>
+              <div class="rule-item"><strong>清除</strong>：清空当前格的数字和标记。</div>
+              <div class="rule-item"><strong>撤销</strong>：撤回上一次编辑。</div>
+              <div class="rule-item"><strong>标记</strong>：切换候选小数字模式。</div>
+              <div class="rule-item"><strong>存档</strong>：保存当前数字和标记。</div>
+              <div class="rule-item"><strong>读档</strong>：读取唯一存档。</div>
+            </div>
+          </div>
         </div>
 
-        <div class="actions">
-          <button id="erase" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="m3 17 8-8 7 7-5 5H7l-4-4Zm8-8 3-3a2 2 0 0 1 3 0l4 4a2 2 0 0 1 0 3l-3 3"/>
-            </svg>
-            清除
-          </button>
-          <button id="check" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="m4 12 5 5L20 6"/>
-            </svg>
-            检查
-          </button>
-          <button id="reset" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.5 9A7 7 0 0 1 17 6.4M18.5 15A7 7 0 0 1 7 17.6"/>
-            </svg>
-            重置
-          </button>
-          <button id="solve" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M12 3 4 7v6c0 4 3.4 7.3 8 8 4.6-.7 8-4 8-8V7l-8-4Zm-3 9 2 2 4-5"/>
-            </svg>
-            答案
-          </button>
-        </div>
-
-        <p id="message" class="message" aria-live="polite">选择一个空格，然后输入数字。</p>
       </aside>
     </section>
   </main>
 
   <script>
     const modeToggleBtn = document.querySelector("#modeToggle");
-    const topbarEl = document.querySelector(".topbar");
-    const timerBadgeEl = document.querySelector(".badge");
     const boardEl = document.querySelector("#board");
     const boardWrapEl = document.querySelector(".board-wrap");
     const numbersEl = document.querySelector("#numbers");
-    const mobileQuickActionsEl = document.querySelector(".mobile-quick-actions");
     const difficultyEl = document.querySelector("#difficulty");
-    const levelTextEl = document.querySelector("#levelText");
     const mistakesEl = document.querySelector("#mistakes");
-    const remainingEl = document.querySelector("#remaining");
+    const completedCountEl = document.querySelector("#completedCount");
+    const averageTimeEl = document.querySelector("#averageTime");
     const timerEl = document.querySelector("#timer");
     const messageEl = document.querySelector("#message");
     const notesModeBtn = document.querySelector("#notesMode");
     const pauseBtn = document.querySelector("#pause");
     const pauseLabelEl = document.querySelector("#pauseLabel");
-    const mobileNotesBtn = document.querySelector("#mobileNotes");
-    const mobileHintBtn = document.querySelector("#mobileHint");
-    const mobilePauseBtn = document.querySelector("#mobilePause");
-    const mobilePauseLabelEl = document.querySelector("#mobilePauseLabel");
-    const mobileEraseBtn = document.querySelector("#mobileErase");
+    const undoBtn = document.querySelector("#undo");
+    const rulesToggleBtn = document.querySelector("#rulesToggle");
+    const rulesPanelEl = document.querySelector("#rulesPanel");
     const pauseControlledEls = [
       difficultyEl,
       document.querySelector("#newGame"),
       notesModeBtn,
       document.querySelector("#hint"),
       document.querySelector("#erase"),
-      document.querySelector("#check"),
+      undoBtn,
+      document.querySelector("#saveGame"),
       document.querySelector("#reset"),
-      document.querySelector("#solve"),
-      mobileNotesBtn,
-      mobileHintBtn,
-      mobileEraseBtn
+      document.querySelector("#loadGame")
     ];
 
     const difficultyMap = {
@@ -783,6 +797,8 @@
       hard: { label: "困难", blanks: 54 }
     };
     const maxMistakes = 3;
+    const saveKey = "sudoku-single-save";
+    const completionStatsKey = "sudoku-completion-stats";
 
     let puzzle = [];
     let solution = [];
@@ -797,26 +813,20 @@
     let startTime = Date.now();
     let elapsedBeforePause = 0;
     let timerId = null;
+    let undoStack = [];
 
     function setInterfaceMode(mode) {
       const mobile = mode === "mobile";
       document.body.classList.toggle("mobile-mode", mobile);
-      if (mobile) {
-        mobileQuickActionsEl.append(timerBadgeEl);
-      } else {
-        topbarEl.append(timerBadgeEl);
-      }
-      modeToggleBtn.textContent = mobile ? "电脑版" : "手机版";
+      modeToggleBtn.textContent = mobile ? "点击切换为电脑版" : "点击切换为手机版";
       modeToggleBtn.setAttribute("aria-pressed", String(mobile));
       localStorage.setItem("sudokuInterfaceMode", mobile ? "mobile" : "desktop");
     }
 
-    function syncMobileControls() {
-      mobileNotesBtn.classList.toggle("active", noteMode);
-      mobilePauseBtn.classList.toggle("active", paused);
-      mobilePauseBtn.disabled = pauseBtn.disabled;
-      mobilePauseBtn.setAttribute("aria-pressed", String(paused));
-      mobilePauseLabelEl.textContent = paused ? "继续" : "暂停";
+    function syncControlStates() {
+      notesModeBtn.classList.toggle("active", noteMode);
+      undoBtn.disabled = paused || gameEnded || undoStack.length === 0;
+      updateCompletionStats();
     }
 
     function shuffle(items) {
@@ -937,6 +947,97 @@
       return `${mins}:${secs}`;
     }
 
+    function emptyStats() {
+      return {
+        easy: { wins: 0, totalMs: 0 },
+        normal: { wins: 0, totalMs: 0 },
+        hard: { wins: 0, totalMs: 0 }
+      };
+    }
+
+    function readCompletionStats() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(completionStatsKey) || "{}");
+        const stats = emptyStats();
+        Object.keys(stats).forEach((key) => {
+          if (parsed[key] && Number.isFinite(parsed[key].wins) && Number.isFinite(parsed[key].totalMs)) {
+            stats[key] = {
+              wins: Math.max(0, parsed[key].wins),
+              totalMs: Math.max(0, parsed[key].totalMs)
+            };
+          }
+        });
+        return stats;
+      } catch (error) {
+        return emptyStats();
+      }
+    }
+
+    function writeCompletionStats(stats) {
+      localStorage.setItem(completionStatsKey, JSON.stringify(stats));
+    }
+
+    function updateCompletionStats() {
+      const stats = readCompletionStats()[difficultyEl.value] || { wins: 0, totalMs: 0 };
+      completedCountEl.textContent = stats.wins;
+      averageTimeEl.textContent = stats.wins ? formatTime(stats.totalMs / stats.wins) : "--:--";
+    }
+
+    function recordCompletion(elapsedMs) {
+      try {
+        const stats = readCompletionStats();
+        const currentStats = stats[difficultyEl.value] || { wins: 0, totalMs: 0 };
+        currentStats.wins += 1;
+        currentStats.totalMs += elapsedMs;
+        stats[difficultyEl.value] = currentStats;
+        writeCompletionStats(stats);
+        updateCompletionStats();
+      } catch (error) {
+        updateCompletionStats();
+      }
+    }
+
+    function serializeNotes() {
+      return notes.map((set) => [...set]);
+    }
+
+    function hydrateNotes(serialized) {
+      return serialized.map((items) => new Set(Array.isArray(items) ? items : []));
+    }
+
+    function pushUndoState() {
+      undoStack.push({
+        current: [...current],
+        notes: serializeNotes(),
+        selectedIndex,
+        mistakes
+      });
+      if (undoStack.length > 80) undoStack.shift();
+      syncControlStates();
+    }
+
+    function clearUndoHistory() {
+      undoStack = [];
+      syncControlStates();
+    }
+
+    function undoLastEdit() {
+      if (paused || gameEnded) return;
+      const previous = undoStack.pop();
+      if (!previous) {
+        setMessage("暂无可撤销的编辑。");
+        syncControlStates();
+        return;
+      }
+      current = [...previous.current];
+      notes = hydrateNotes(previous.notes);
+      selectedIndex = previous.selectedIndex;
+      mistakes = previous.mistakes;
+      setMessage("已撤销上次编辑。");
+      renderBoard();
+      syncControlStates();
+    }
+
     function setMessage(text, isWin = false) {
       messageEl.textContent = text;
       messageEl.classList.toggle("win", isWin);
@@ -1040,7 +1141,7 @@
       numbersEl.querySelectorAll("button").forEach((button) => {
         button.disabled = paused;
       });
-      syncMobileControls();
+      syncControlStates();
     }
 
     function renderBoard() {
@@ -1086,8 +1187,8 @@
       });
 
       mistakesEl.textContent = `${mistakes}/${maxMistakes}`;
-      remainingEl.textContent = countRemaining();
       updateNumberCounters();
+      syncControlStates();
     }
 
     function renderNumbers() {
@@ -1122,17 +1223,23 @@
       }
 
       if (noteMode) {
+        pushUndoState();
         current[selectedIndex] = 0;
         if (notes[selectedIndex].has(number)) {
           notes[selectedIndex].delete(number);
         } else {
           notes[selectedIndex].add(number);
         }
-        setMessage("笔记已更新。");
+        setMessage("标记已更新。");
         renderBoard();
         return;
       }
 
+      if (current[selectedIndex] === number && notes[selectedIndex].size === 0) {
+        setMessage("这个格子已经是这个数字。");
+        return;
+      }
+      pushUndoState();
       notes[selectedIndex].clear();
       const previousValue = current[selectedIndex];
       current[selectedIndex] = number;
@@ -1170,6 +1277,11 @@
         setMessage("题目数字保留原样。");
         return;
       }
+      if (current[selectedIndex] === 0 && notes[selectedIndex].size === 0) {
+        setMessage("当前格已经是空白。");
+        return;
+      }
+      pushUndoState();
       current[selectedIndex] = 0;
       notes[selectedIndex].clear();
       setMessage("已清除当前格。");
@@ -1178,36 +1290,24 @@
 
     function giveHint() {
       if (paused || gameEnded) return;
-      const emptyIndexes = current
-        .map((value, index) => value === 0 ? index : -1)
-        .filter((index) => index !== -1);
-
-      if (!emptyIndexes.length) {
+      if (countRemaining() === 0) {
         checkWin();
         return;
       }
 
-      selectedIndex = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+      if (given[selectedIndex] || current[selectedIndex] !== 0) {
+        setMessage("请先选中一个空白格，再使用提示。");
+        renderBoard();
+        return;
+      }
+
+      pushUndoState();
       current[selectedIndex] = solution[selectedIndex];
       notes[selectedIndex].clear();
       removeNoteFromPeers(selectedIndex, current[selectedIndex]);
-      setMessage("已填入一个提示。");
+      setMessage("已在当前空白格填入提示。");
       renderBoard();
       checkWin();
-    }
-
-    function checkBoard() {
-      if (paused || gameEnded) return;
-      const conflicts = conflictIndexes();
-      const remaining = countRemaining();
-      if (!conflicts.size && remaining === 0) {
-        winGame();
-      } else if (!conflicts.size) {
-        setMessage(`目前没有明错误，还剩 ${remaining} 格。`);
-      } else {
-        setMessage("棋盘里有重复冲突，标红数字需要调整。");
-      }
-      renderBoard();
     }
 
     function isCompleteValidBoard() {
@@ -1219,13 +1319,15 @@
     }
 
     function winGame() {
+      const elapsedMs = currentElapsed();
       gameEnded = true;
       paused = false;
       stopTimer();
+      recordCompletion(elapsedMs);
       boardWrapEl.classList.remove("paused");
       pauseBtn.classList.remove("active");
       pauseBtn.disabled = true;
-      syncMobileControls();
+      syncControlStates();
       setMessage(`完成！用时 ${timerEl.textContent}，错误 ${mistakes}/${maxMistakes}。`, true);
     }
 
@@ -1245,12 +1347,13 @@
       numbersEl.querySelectorAll("button").forEach((button) => {
         button.disabled = true;
       });
-      syncMobileControls();
+      syncControlStates();
       setMessage("失败：明错误已超过 3 次，只能重新开局。", true);
     }
 
     function resetGame() {
       if (paused || gameEnded) return;
+      pushUndoState();
       current = [...puzzle];
       notes = Array.from({ length: 81 }, () => new Set());
       mistakes = 0;
@@ -1264,25 +1367,87 @@
       pauseBtn.classList.remove("active");
       pauseBtn.setAttribute("aria-pressed", "false");
       pauseLabelEl.textContent = "暂停";
-      syncMobileControls();
+      syncControlStates();
       startTimer();
       setMessage("棋盘已重置。");
       renderBoard();
     }
 
-    function solveGame() {
-      if (paused || gameEnded) return;
-      current = [...solution];
-      notes = Array.from({ length: 81 }, () => new Set());
-      gameEnded = true;
-      paused = false;
-      stopTimer();
-      boardWrapEl.classList.remove("paused");
-      pauseBtn.classList.remove("active");
-      pauseBtn.disabled = true;
-      syncMobileControls();
-      setMessage("答案已显示。", true);
-      renderBoard();
+    function saveGame() {
+      if (paused) return;
+      try {
+        if (localStorage.getItem(saveKey) && !confirm("已有存档，是否覆盖原档案？")) {
+          setMessage("已取消覆盖存档。");
+          return;
+        }
+        const archive = {
+          version: 1,
+          savedAt: new Date().toISOString(),
+          difficulty: difficultyEl.value,
+          puzzle,
+          solution,
+          current,
+          given,
+          notes: serializeNotes(),
+          selectedIndex,
+          mistakes,
+          elapsedMs: currentElapsed()
+        };
+        localStorage.setItem(saveKey, JSON.stringify(archive));
+        setMessage("已存档。");
+      } catch (error) {
+        setMessage("存档失败：当前浏览器不允许写入本地存储。");
+      }
+    }
+
+    function loadGame() {
+      if (paused) return;
+      try {
+        const raw = localStorage.getItem(saveKey);
+        if (!raw) {
+          setMessage("暂无存档。");
+          return;
+        }
+        const archive = JSON.parse(raw);
+        if (!Array.isArray(archive.current) || archive.current.length !== 81 ||
+            !Array.isArray(archive.notes) || archive.notes.length !== 81) {
+          setMessage("读档失败：存档格式不正确。");
+          return;
+        }
+        puzzle = Array.isArray(archive.puzzle) && archive.puzzle.length === 81 ? [...archive.puzzle] : [...archive.current];
+        solution = Array.isArray(archive.solution) && archive.solution.length === 81 ? [...archive.solution] : [...archive.current];
+        current = [...archive.current];
+        given = Array.isArray(archive.given) && archive.given.length === 81 ? [...archive.given] : puzzle.map(Boolean);
+        notes = hydrateNotes(archive.notes);
+        selectedIndex = Number.isInteger(archive.selectedIndex) ? archive.selectedIndex : current.findIndex((value) => value === 0);
+        if (selectedIndex < 0) selectedIndex = 0;
+        mistakes = Number.isInteger(archive.mistakes) ? archive.mistakes : 0;
+        elapsedBeforePause = Number.isFinite(archive.elapsedMs) ? archive.elapsedMs : 0;
+        noteMode = false;
+        paused = false;
+        gameEnded = false;
+        if (archive.difficulty && difficultyMap[archive.difficulty]) difficultyEl.value = archive.difficulty;
+        boardWrapEl.classList.remove("paused");
+        boardEl.setAttribute("aria-hidden", "false");
+        notesModeBtn.classList.remove("active");
+        pauseBtn.classList.remove("active");
+        pauseBtn.disabled = false;
+        pauseBtn.setAttribute("aria-pressed", "false");
+        pauseLabelEl.textContent = "暂停";
+        pauseControlledEls.forEach((element) => {
+          element.disabled = false;
+        });
+        numbersEl.querySelectorAll("button").forEach((button) => {
+          button.disabled = false;
+        });
+        clearUndoHistory();
+        syncControlStates();
+        startTimer();
+        setMessage("已读档。");
+        renderBoard();
+      } catch (error) {
+        setMessage("读档失败：无法读取存档。");
+      }
     }
 
     function newGame() {
@@ -1298,7 +1463,6 @@
       gameEnded = false;
       elapsedBeforePause = 0;
       selectedIndex = puzzle.findIndex((value) => value === 0);
-      levelTextEl.textContent = difficulty.label;
       timerEl.textContent = "00:00";
       pauseBtn.disabled = false;
       pauseControlledEls.forEach((element) => {
@@ -1313,7 +1477,8 @@
       numbersEl.querySelectorAll("button").forEach((button) => {
         button.disabled = false;
       });
-      syncMobileControls();
+      clearUndoHistory();
+      syncControlStates();
       startTimer();
       setMessage("选择一个空格，然后输入数字。");
       renderBoard();
@@ -1323,24 +1488,27 @@
       if (paused || gameEnded) return;
       noteMode = !noteMode;
       notesModeBtn.classList.toggle("active", noteMode);
-      syncMobileControls();
-      setMessage(noteMode ? "笔记模式已开启。" : "笔记模式已关闭。");
+      syncControlStates();
+      setMessage(noteMode ? "标记模式已开启。" : "标记模式已关闭。");
     });
 
     modeToggleBtn.addEventListener("click", () => {
       setInterfaceMode(document.body.classList.contains("mobile-mode") ? "desktop" : "mobile");
     });
+    rulesToggleBtn.addEventListener("click", () => {
+      const collapsed = !rulesPanelEl.hidden;
+      rulesPanelEl.hidden = collapsed;
+      rulesToggleBtn.setAttribute("aria-expanded", String(!collapsed));
+      setMessage(collapsed ? "规则说明已收起。" : "规则说明已展开。");
+    });
     document.querySelector("#newGame").addEventListener("click", newGame);
     document.querySelector("#hint").addEventListener("click", giveHint);
     document.querySelector("#erase").addEventListener("click", eraseSelected);
-    document.querySelector("#check").addEventListener("click", checkBoard);
+    document.querySelector("#undo").addEventListener("click", undoLastEdit);
+    document.querySelector("#saveGame").addEventListener("click", saveGame);
     document.querySelector("#reset").addEventListener("click", resetGame);
-    document.querySelector("#solve").addEventListener("click", solveGame);
+    document.querySelector("#loadGame").addEventListener("click", loadGame);
     pauseBtn.addEventListener("click", () => setPaused(!paused));
-    mobileNotesBtn.addEventListener("click", () => notesModeBtn.click());
-    mobileHintBtn.addEventListener("click", giveHint);
-    mobilePauseBtn.addEventListener("click", () => setPaused(!paused));
-    mobileEraseBtn.addEventListener("click", eraseSelected);
 
     document.addEventListener("keydown", (event) => {
       if (event.key.toLowerCase() === "p") {
