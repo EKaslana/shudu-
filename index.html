@@ -433,6 +433,24 @@
       color: #674c14;
     }
 
+    .message-offer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .message-action {
+      width: auto;
+      min-height: 30px;
+      padding: 0 14px;
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+    }
+
     @media (max-width: 820px) {
       main {
         width: min(100vw - 18px, 620px);
@@ -642,7 +660,7 @@
       </div>
 
       <aside class="panel">
-        <p id="message" class="message" aria-live="polite">选择一个空格，然后输入数字。</p>
+        <div id="message" class="message" aria-live="polite">选择一个空格，然后输入数字。</div>
 
         <div id="numbers" class="numbers" aria-label="数字输入"></div>
 
@@ -1038,9 +1056,22 @@
       syncControlStates();
     }
 
-    function setMessage(text, isWin = false) {
-      messageEl.textContent = text;
+    function setMessage(text, isWin = false, offerNewGame = false) {
+      messageEl.replaceChildren(document.createTextNode(text));
       messageEl.classList.toggle("win", isWin);
+      if (!offerNewGame) return;
+
+      const offer = document.createElement("div");
+      offer.className = "message-offer";
+      const question = document.createElement("span");
+      question.textContent = "是否新开一局？";
+      const yesButton = document.createElement("button");
+      yesButton.type = "button";
+      yesButton.className = "message-action";
+      yesButton.textContent = "是";
+      yesButton.addEventListener("click", newGame);
+      offer.append(question, yesButton);
+      messageEl.append(offer);
     }
 
     function countRemaining() {
@@ -1328,7 +1359,7 @@
       pauseBtn.classList.remove("active");
       pauseBtn.disabled = true;
       syncControlStates();
-      setMessage(`完成！用时 ${timerEl.textContent}，错误 ${mistakes}/${maxMistakes}。`, true);
+      setMessage(`完成！用时 ${timerEl.textContent}，错误 ${mistakes}/${maxMistakes}。`, true, true);
     }
 
     function failGame() {
@@ -1348,7 +1379,7 @@
         button.disabled = true;
       });
       syncControlStates();
-      setMessage("失败：明错误已超过 3 次，只能重新开局。", true);
+      setMessage("失败：明错误已超过 3 次，只能重新开局。", true, true);
     }
 
     function resetGame() {
