@@ -477,6 +477,12 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      align-items: stretch;
+    }
+
+    body.mobile-mode .board-wrap,
+    body.mobile-mode .panel {
+      width: 100%;
     }
 
     body.mobile-mode .board-wrap {
@@ -515,8 +521,26 @@
     body.mobile-mode .mobile-quick-actions {
       order: 2;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 6px;
+    }
+
+    body.mobile-mode .mobile-quick-actions .badge {
+      width: 100%;
+      height: 36px;
+      min-height: 36px;
+      padding: 0 4px;
+      gap: 4px;
+      justify-content: center;
+      border-color: rgba(47, 64, 86, 0.22);
+      background: var(--surface);
+      box-shadow: none;
+      font-size: 13px;
+    }
+
+    body.mobile-mode .mobile-quick-actions .badge svg {
+      width: 14px;
+      height: 14px;
     }
 
     body.mobile-mode .mobile-quick-actions button,
@@ -719,9 +743,12 @@
 
   <script>
     const modeToggleBtn = document.querySelector("#modeToggle");
+    const topbarEl = document.querySelector(".topbar");
+    const timerBadgeEl = document.querySelector(".badge");
     const boardEl = document.querySelector("#board");
     const boardWrapEl = document.querySelector(".board-wrap");
     const numbersEl = document.querySelector("#numbers");
+    const mobileQuickActionsEl = document.querySelector(".mobile-quick-actions");
     const difficultyEl = document.querySelector("#difficulty");
     const levelTextEl = document.querySelector("#levelText");
     const mistakesEl = document.querySelector("#mistakes");
@@ -774,6 +801,11 @@
     function setInterfaceMode(mode) {
       const mobile = mode === "mobile";
       document.body.classList.toggle("mobile-mode", mobile);
+      if (mobile) {
+        mobileQuickActionsEl.append(timerBadgeEl);
+      } else {
+        topbarEl.append(timerBadgeEl);
+      }
       modeToggleBtn.textContent = mobile ? "电脑版" : "手机版";
       modeToggleBtn.setAttribute("aria-pressed", String(mobile));
       localStorage.setItem("sudokuInterfaceMode", mobile ? "mobile" : "desktop");
