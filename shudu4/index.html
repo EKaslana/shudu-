@@ -453,6 +453,229 @@
       font-size: 13px;
     }
 
+    /* ============ 结算弹窗 ============ */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(20, 30, 45, 0.55);
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 220ms ease;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-card {
+      position: relative;
+      width: min(420px, calc(100vw - 40px));
+      padding: 28px 24px 22px;
+      border-radius: 22px;
+      background: linear-gradient(160deg, #ffffff 0%, #f4f9f7 100%);
+      box-shadow: 0 30px 70px rgba(20, 40, 60, 0.32);
+      text-align: center;
+      transform: translateY(20px) scale(0.92);
+      opacity: 0;
+      transition: transform 360ms cubic-bezier(.2, .9, .35, 1.3), opacity 280ms ease;
+      overflow: hidden;
+    }
+
+    .modal-backdrop.show .modal-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .modal-card.win {
+      background: linear-gradient(160deg, #fff7df 0%, #ffe8c4 100%);
+    }
+
+    .modal-card.fail {
+      background: linear-gradient(160deg, #fff2ee 0%, #ffe2dc 100%);
+    }
+
+    .modal-emoji {
+      display: inline-block;
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 8px;
+      transform-origin: 50% 70%;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+    }
+
+    .modal-card.win .modal-emoji {
+      animation: bounceIn 700ms cubic-bezier(.2, .9, .35, 1.5) both, wiggle 1.8s ease-in-out 700ms infinite;
+    }
+
+    .modal-card.fail .modal-emoji {
+      animation: dropIn 600ms cubic-bezier(.2, .9, .35, 1.2) both, sway 2.4s ease-in-out 600ms infinite;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+      60% { transform: scale(1.25) rotate(8deg); opacity: 1; }
+      80% { transform: scale(0.92) rotate(-4deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-6deg) translateY(0); }
+      50% { transform: rotate(6deg) translateY(-4px); }
+    }
+
+    @keyframes dropIn {
+      0% { transform: translateY(-40px) scale(0.6); opacity: 0; }
+      70% { transform: translateY(6px) scale(1.05); opacity: 1; }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: rotate(-4deg); }
+      50% { transform: rotate(4deg); }
+    }
+
+    .modal-title {
+      margin: 4px 0 6px;
+      font-size: 24px;
+      font-weight: 900;
+      color: #284b45;
+    }
+
+    .modal-card.win .modal-title { color: #7a4e10; }
+    .modal-card.fail .modal-title { color: #9c3a2c; }
+
+    .modal-text {
+      margin: 0;
+      color: #4a5a6b;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+
+    .modal-stats {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin: 14px 0 4px;
+      color: #3b4d63;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .modal-stats strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 900;
+      color: #1c4940;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .modal-actions button {
+      width: auto;
+      min-width: 110px;
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .modal-actions .primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .modal-card.win .modal-actions .primary {
+      background: #d99c2b;
+      border-color: #d99c2b;
+    }
+
+    .modal-card.fail .modal-actions .primary {
+      background: #c9533f;
+      border-color: #c9533f;
+    }
+
+    /* ============ 撒花/星星 ============ */
+    .confetti-layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 14px;
+      border-radius: 2px;
+      opacity: 0;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translate3d(0, -30px, 0) rotate(0); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translate3d(var(--dx, 0), 520px, 0) rotate(var(--rot, 540deg)); opacity: 0.9; }
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 22px;
+      opacity: 0;
+      animation: sparklePop 1.4s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes sparklePop {
+      0% { transform: scale(0) rotate(0); opacity: 0; }
+      40% { transform: scale(1.3) rotate(20deg); opacity: 1; }
+      100% { transform: scale(0.6) rotate(60deg) translateY(-30px); opacity: 0; }
+    }
+
+    /* ============ 失败：飘落的小水滴/汗珠 ============ */
+    .teardrop-layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .teardrop {
+      position: absolute;
+      top: -20px;
+      font-size: 18px;
+      opacity: 0;
+      animation: tearfall 2.2s ease-in forwards;
+    }
+
+    @keyframes tearfall {
+      0% { transform: translateY(-10px); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translateY(360px); opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .modal-card, .modal-card .modal-emoji,
+      .confetti, .sparkle, .teardrop {
+        animation: none !important;
+        transition: none !important;
+      }
+      .modal-card { transform: none; opacity: 1; }
+    }
+
     @media (max-width: 820px) {
       main {
         width: min(100vw - 18px, 520px);
@@ -778,6 +1001,20 @@
     </section>
   </main>
 
+  <div id="resultModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <div id="modalCard" class="modal-card">
+      <div id="effectLayer" class="confetti-layer" aria-hidden="true"></div>
+      <div id="modalEmoji" class="modal-emoji">🎉</div>
+      <h2 id="modalTitle" class="modal-title">恭喜过关！</h2>
+      <p id="modalText" class="modal-text"></p>
+      <div id="modalStats" class="modal-stats"></div>
+      <div class="modal-actions">
+        <button id="modalNewGame" type="button" class="primary">再来一局</button>
+        <button id="modalClose" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ============================
     // 4×4 数独配置
@@ -785,6 +1022,149 @@
     const SIZE = 4;          // 棋盘边长
     const BOX = 2;           // 宫格边长
     const TOTAL = SIZE * SIZE; // 总格数 16
+
+    const resultModal = document.querySelector("#resultModal");
+    const modalCard = document.querySelector("#modalCard");
+    const modalEmoji = document.querySelector("#modalEmoji");
+    const modalTitle = document.querySelector("#modalTitle");
+    const modalText = document.querySelector("#modalText");
+    const modalStats = document.querySelector("#modalStats");
+    const effectLayer = document.querySelector("#effectLayer");
+    const modalNewGameBtn = document.querySelector("#modalNewGame");
+    const modalCloseBtn = document.querySelector("#modalClose");
+
+    const winLines = [
+      { emoji: "\ud83c\udf89", title: "太棒了！", text: "一气呵成，行云流水，这一局漂亮收官！" },
+      { emoji: "\ud83c\udf1f", title: "现在是谁在发光？", text: "是你。一个只靠脑子就能点亮 16 格的人。" },
+      { emoji: "\ud83c\udf6f", title: "甜甜的胜利！", text: "逻辑纵横、手感丝滑，这一局完美收尾。" },
+      { emoji: "\ud83d\ude38", title: "智商拉满！", text: "你这脑袋转得比魔方还快。" },
+      { emoji: "\ud83d\udc8e", title: "闪闪发光的你！", text: "这一手，月薪都该多发三千。" },
+      { emoji: "\ud83d\ude80", title: "一路狂飙！", text: "手速响当当，思路清晰，自带主角光环。" }
+    ];
+
+    const failLines = [
+      { emoji: "\ud83e\udd17", title: "下一局肯定行！", text: "别沮丧，数独不会记仇，下一局它还会温柔接待你。" },
+      { emoji: "\ud83c\udf31", title: "慢一点也没关系。", text: "大脑也需要热身。再试一次，会顺很多。" },
+      { emoji: "\ud83c\udf38", title: "你已经很棒了。", text: "能坚持到这一步，说明你本来就不是易输的人。" },
+      { emoji: "\ud83d\udc3c", title: "抱抱。", text: "吃个竹子，喝口水，我们重新开始。" },
+      { emoji: "\ud83c\udf1e", title: "明天会更好。", text: "失败只是另一种反馈，欢迎回来再试。" },
+      { emoji: "\ud83e\uddca", title: "冷静一下下一局冲！", text: "深呼吸、温柔地一个一个划。你可以的。" }
+    ];
+
+    const confettiColors = ["#ffd54a", "#1c8c7c", "#f15a4a", "#5aa3f1", "#c177ff", "#ff9c4a"];
+
+    function pickRandom(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function clearEffectLayer() {
+      effectLayer.innerHTML = "";
+    }
+
+    function launchConfetti() {
+      effectLayer.className = "confetti-layer";
+      clearEffectLayer();
+      const cardWidth = modalCard.clientWidth || 380;
+      const count = 36;
+      for (let i = 0; i < count; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        const startX = Math.random() * cardWidth;
+        const dx = (Math.random() - 0.5) * 180;
+        const rot = (Math.random() * 720 - 360) + "deg";
+        const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        const duration = 1.6 + Math.random() * 1.6;
+        const delay = Math.random() * 0.6;
+        const size = 6 + Math.random() * 6;
+        piece.style.left = startX + "px";
+        piece.style.width = size + "px";
+        piece.style.height = (size * 1.4) + "px";
+        piece.style.background = color;
+        piece.style.setProperty("--dx", dx + "px");
+        piece.style.setProperty("--rot", rot);
+        piece.style.animationDuration = duration + "s";
+        piece.style.animationDelay = delay + "s";
+        effectLayer.append(piece);
+      }
+      // 闪烁的小星星
+      const sparkleIcons = ["\u2728", "\u2b50", "\ud83d\udcab"];
+      for (let i = 0; i < 8; i += 1) {
+        const star = document.createElement("span");
+        star.className = "sparkle";
+        star.textContent = sparkleIcons[i % sparkleIcons.length];
+        star.style.left = (10 + Math.random() * 80) + "%";
+        star.style.top = (10 + Math.random() * 60) + "%";
+        star.style.animationDelay = (Math.random() * 0.8) + "s";
+        effectLayer.append(star);
+      }
+    }
+
+    function launchTeardrops() {
+      effectLayer.className = "teardrop-layer";
+      clearEffectLayer();
+      const cardWidth = modalCard.clientWidth || 380;
+      const drops = ["\ud83d\udca7", "\ud83d\udcab", "\ud83c\udf43"];
+      for (let i = 0; i < 14; i += 1) {
+        const drop = document.createElement("span");
+        drop.className = "teardrop";
+        drop.textContent = drops[i % drops.length];
+        drop.style.left = (Math.random() * cardWidth) + "px";
+        drop.style.animationDelay = (Math.random() * 1.5) + "s";
+        drop.style.animationDuration = (1.6 + Math.random() * 1.4) + "s";
+        effectLayer.append(drop);
+      }
+    }
+
+    function showResultModal(kind, payload) {
+      const line = kind === "win" ? pickRandom(winLines) : pickRandom(failLines);
+      modalCard.classList.remove("win", "fail");
+      modalCard.classList.add(kind);
+      modalEmoji.textContent = line.emoji;
+      modalTitle.textContent = line.title;
+      modalText.textContent = line.text;
+
+      modalStats.innerHTML = "";
+      if (payload) {
+        if (payload.time) {
+          const s = document.createElement("div");
+          s.innerHTML = `用时<strong>${payload.time}</strong>`;
+          modalStats.append(s);
+        }
+        if (payload.mistakesText) {
+          const s = document.createElement("div");
+          s.innerHTML = `错误<strong>${payload.mistakesText}</strong>`;
+          modalStats.append(s);
+        }
+      }
+
+      resultModal.classList.add("show");
+      resultModal.setAttribute("aria-hidden", "false");
+      if (kind === "win") {
+        launchConfetti();
+      } else {
+        launchTeardrops();
+      }
+    }
+
+    function hideResultModal() {
+      resultModal.classList.remove("show");
+      resultModal.setAttribute("aria-hidden", "true");
+      clearEffectLayer();
+    }
+
+    modalNewGameBtn.addEventListener("click", () => {
+      hideResultModal();
+      newGame();
+    });
+    modalCloseBtn.addEventListener("click", hideResultModal);
+    resultModal.addEventListener("click", (event) => {
+      if (event.target === resultModal) hideResultModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && resultModal.classList.contains("show")) {
+        hideResultModal();
+      }
+    });
 
     const modeToggleBtn = document.querySelector("#modeToggle");
     const boardEl = document.querySelector("#board");
@@ -1370,6 +1750,10 @@
       pauseBtn.disabled = true;
       syncControlStates();
       setMessage(`完成！用时 ${timerEl.textContent}，错误 ${mistakes}/${maxMistakes}。`, true, true);
+      showResultModal("win", {
+        time: timerEl.textContent,
+        mistakesText: `${mistakes}/${maxMistakes}`
+      });
     }
 
     function failGame() {
@@ -1390,6 +1774,10 @@
       });
       syncControlStates();
       setMessage(`失败：明错误已超过 ${maxMistakes} 次，只能重新开局。`, true, true);
+      showResultModal("fail", {
+        time: timerEl.textContent,
+        mistakesText: `${mistakes}/${maxMistakes}`
+      });
     }
 
     function resetGame() {
@@ -1493,6 +1881,7 @@
     }
 
     function newGame() {
+      hideResultModal();
       const difficulty = difficultyMap[difficultyEl.value];
       solution = makeSolution();
       puzzle = makePuzzle(solution, difficulty.blanks);
