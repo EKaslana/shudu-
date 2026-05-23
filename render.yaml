@@ -1,6 +1,7 @@
 services:
   - type: web
     name: shudu
-    runtime: static
-    buildCommand: echo "Static site ready"
-    staticPublishPath: .
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start

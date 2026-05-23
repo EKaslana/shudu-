@@ -1,0 +1,17 @@
+{
+  "name": "shudu-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "数独小游戏 Node.js 服务端与访问统计",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^4.21.2"
+  }
+}
