@@ -43,6 +43,13 @@ function normalizeSourceLabel(input) {
   return normalized.slice(0, 120);
 }
 
+function normalizeGameVersion(input, requestPath = "") {
+  const value = typeof input === "string" ? input.trim().toLowerCase() : "";
+  if (["4x4", "4*4", "4"].includes(value)) return "4x4";
+  if (["9x9", "9*9", "9"].includes(value)) return "9x9";
+  return requestPath.startsWith("/shudu4") ? "4x4" : "9x9";
+}
+
 function createStore() {
   ensureDbDirectory();
 
@@ -58,14 +65,25 @@ function createStore() {
       user_agent TEXT,
       ip_address TEXT,
       source_channel TEXT NOT NULL,
+      game_version TEXT NOT NULL DEFAULT '9x9',
       created_at TEXT NOT NULL,
       visit_day TEXT NOT NULL
     );
 
+    PRAGMA user_version = 1;
+  `);
+
+  const columns = db.prepare(`PRAGMA table_info(visit_logs)`).all();
+  if (!columns.some((column) => column.name === "game_version")) {
+    db.exec(`ALTER TABLE visit_logs ADD COLUMN game_version TEXT NOT NULL DEFAULT '9x9'`);
+  }
+
+  db.exec(`
     CREATE INDEX IF NOT EXISTS idx_visit_logs_created_at ON visit_logs(created_at);
     CREATE INDEX IF NOT EXISTS idx_visit_logs_visit_day ON visit_logs(visit_day);
     CREATE INDEX IF NOT EXISTS idx_visit_logs_visitor_id ON visit_logs(visitor_id);
     CREATE INDEX IF NOT EXISTS idx_visit_logs_source_channel ON visit_logs(source_channel);
+    CREATE INDEX IF NOT EXISTS idx_visit_logs_game_version ON visit_logs(game_version);
   `);
 
   const insertVisit = db.prepare(`
@@ -76,6 +94,7 @@ function createStore() {
       user_agent,
       ip_address,
       source_channel,
+      game_version,
       created_at,
       visit_day
     ) VALUES (
@@ -85,28 +104,30 @@ function createStore() {
       @user_agent,
       @ip_address,
       @source_channel,
+      @game_version,
       @created_at,
       @visit_day
     )
   `);
 
-  const totalPvStmt = db.prepare(`SELECT COUNT(*) AS count FROM visit_logs`);
-  const totalUvStmt = db.prepare(`SELECT COUNT(DISTINCT visitor_id) AS count FROM visit_logs`);
+  const totalPvStmt = db.prepare(`SELECT COUNT(*) AS count FROM visit_logs WHERE game_version = ?`);
+  const totalUvStmt = db.prepare(`SELECT COUNT(DISTINCT visitor_id) AS count FROM visit_logs WHERE game_version = ?`);
   const todayUvStmt = db.prepare(`
     SELECT COUNT(DISTINCT visitor_id) AS count
     FROM visit_logs
-    WHERE visit_day = ?
+    WHERE game_version = ? AND visit_day = ?
   `);
   const trendStmt = db.prepare(`
     SELECT visit_day, COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv
     FROM visit_logs
-    WHERE visit_day BETWEEN ? AND ?
+    WHERE game_version = ? AND visit_day BETWEEN ? AND ?
     GROUP BY visit_day
     ORDER BY visit_day ASC
   `);
   const sourcesStmt = db.prepare(`
     SELECT source_channel AS channel, COUNT(*) AS visits
     FROM visit_logs
+    WHERE game_version = ?
     GROUP BY source_channel
     ORDER BY visits DESC, channel ASC
   `);
@@ -116,6 +137,7 @@ function createStore() {
     recordVisit(entry) {
       const createdAt = new Date().toISOString();
       const normalizedSource = normalizeSourceLabel(entry.sourceChannel) || classifySource(entry.referrer);
+      const normalizedVersion = normalizeGameVersion(entry.gameVersion, entry.path);
       const payload = {
         visitor_id: entry.visitorId,
         request_path: entry.path,
@@ -123,6 +145,7 @@ function createStore() {
         user_agent: entry.userAgent || "",
         ip_address: entry.ipAddress || "",
         source_channel: normalizedSource,
+        game_version: normalizedVersion,
         created_at: createdAt,
         visit_day: formatDay(new Date(createdAt))
       };
@@ -132,15 +155,18 @@ function createStore() {
       return {
         id: info.lastInsertRowid,
         createdAt,
-        sourceChannel: payload.source_channel
+        sourceChannel: payload.source_channel,
+        gameVersion: payload.game_version
       };
     },
-    getStats(now = new Date()) {
+    getStats(options = {}) {
+      const now = options.now || new Date();
+      const version = normalizeGameVersion(options.version);
       const today = formatDay(now);
       const windowStart = new Date(startOfDay(now));
       windowStart.setDate(windowStart.getDate() - 6);
       const fromDay = formatDay(windowStart);
-      const trendRows = trendStmt.all(fromDay, today);
+      const trendRows = trendStmt.all(version, fromDay, today);
       const trendMap = new Map(trendRows.map((row) => [row.visit_day, row]));
       const trend = [];
 
@@ -157,13 +183,14 @@ function createStore() {
       }
 
       return {
+        version,
         totals: {
-          uv: totalUvStmt.get().count,
-          todayUv: todayUvStmt.get(today).count,
-          pv: totalPvStmt.get().count
+          uv: totalUvStmt.get(version).count,
+          todayUv: todayUvStmt.get(version, today).count,
+          pv: totalPvStmt.get(version).count
         },
         trend,
-        sources: sourcesStmt.all()
+        sources: sourcesStmt.all(version)
       };
     },
     close() {
@@ -175,6 +202,7 @@ function createStore() {
 module.exports = {
   DB_PATH,
   classifySource,
+  normalizeGameVersion,
   normalizeSourceLabel,
   createStore
 };

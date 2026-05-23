@@ -452,171 +452,6 @@
       font-size: 13px;
     }
 
-    .visitor-stats {
-      display: grid;
-      gap: 16px;
-      margin-top: 22px;
-      padding: 18px;
-      border: 1px solid rgba(47, 64, 86, 0.18);
-      background: rgba(255, 255, 255, 0.78);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-
-    .visitor-stats-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .visitor-stats-title {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.2;
-    }
-
-    .visitor-stats-copy {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .visitor-stats-status {
-      min-width: 152px;
-      padding: 9px 12px;
-      border: 1px solid rgba(47, 64, 86, 0.18);
-      background: rgba(237, 248, 245, 0.9);
-      color: #284b45;
-      font-size: 13px;
-      line-height: 1.4;
-      text-align: center;
-    }
-
-    .visitor-stats-status.is-error {
-      border-color: rgba(185, 75, 75, 0.22);
-      background: #fff1ee;
-      color: #8a2f2f;
-    }
-
-    .visitor-stats-status.is-muted {
-      color: var(--muted);
-      background: rgba(247, 244, 236, 0.72);
-    }
-
-    .visitor-stats-summary {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .visitor-stat-card,
-    .visitor-stats-block {
-      padding: 14px;
-      border: 1px solid rgba(47, 64, 86, 0.14);
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    .visitor-stat-card {
-      display: grid;
-      gap: 8px;
-      min-height: 108px;
-      align-content: start;
-    }
-
-    .visitor-stat-label {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .visitor-stat-value {
-      font-size: clamp(28px, 4vw, 40px);
-      font-weight: 900;
-      line-height: 1;
-      color: #153d38;
-    }
-
-    .visitor-stat-note {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-
-    .visitor-stats-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-      gap: 12px;
-    }
-
-    .visitor-stats-block h2 {
-      margin: 0 0 12px;
-      font-size: 16px;
-      line-height: 1.3;
-    }
-
-    .visitor-trend-list,
-    .visitor-source-list {
-      display: grid;
-      gap: 8px;
-    }
-
-    .visitor-trend-row {
-      display: grid;
-      grid-template-columns: 70px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-    }
-
-    .visitor-trend-label,
-    .visitor-source-label {
-      min-width: 0;
-      color: var(--ink);
-      font-weight: 700;
-    }
-
-    .visitor-trend-bar {
-      position: relative;
-      height: 10px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: rgba(201, 211, 223, 0.6);
-    }
-
-    .visitor-trend-fill {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #1c8c7c, #f0b54f);
-    }
-
-    .visitor-trend-value,
-    .visitor-source-value {
-      color: var(--muted);
-      font-variant-numeric: tabular-nums;
-      text-align: right;
-    }
-
-    .visitor-source-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(237, 248, 245, 0.9);
-      font-size: 13px;
-    }
-
-    .visitor-empty {
-      padding: 14px;
-      border: 1px dashed rgba(47, 64, 86, 0.22);
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
-    }
-
     @media (max-width: 820px) {
       main {
         width: min(100vw - 18px, 620px);
@@ -632,19 +467,6 @@
         margin-top: 14px;
       }
 
-      .visitor-stats-header,
-      .visitor-stats-grid {
-        grid-template-columns: 1fr;
-        display: grid;
-      }
-
-      .visitor-stats-status {
-        min-width: 0;
-      }
-
-      .visitor-stats-summary {
-        grid-template-columns: 1fr;
-      }
     }
 
     @media (max-width: 430px) {
@@ -669,14 +491,6 @@
         font-size: 13px;
       }
 
-      .visitor-stats {
-        padding: 14px;
-      }
-
-      .visitor-trend-row {
-        grid-template-columns: 56px minmax(0, 1fr) auto;
-        gap: 8px;
-      }
     }
 
     body.mobile-mode main {
@@ -831,36 +645,6 @@
       font-size: 13px;
     }
 
-    body.mobile-mode .visitor-stats {
-      gap: 12px;
-      margin-top: 10px;
-      padding: 12px;
-      box-shadow: none;
-    }
-
-    body.mobile-mode .visitor-stats-title {
-      font-size: 18px;
-    }
-
-    body.mobile-mode .visitor-stats-copy,
-    body.mobile-mode .visitor-stats-status,
-    body.mobile-mode .visitor-stat-label,
-    body.mobile-mode .visitor-stat-note,
-    body.mobile-mode .visitor-trend-row,
-    body.mobile-mode .visitor-source-row {
-      font-size: 12px;
-    }
-
-    body.mobile-mode .visitor-stats-summary,
-    body.mobile-mode .visitor-stats-grid {
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    body.mobile-mode .visitor-stat-card,
-    body.mobile-mode .visitor-stats-block {
-      padding: 12px;
-    }
   </style>
   <script>
     var _hmt = _hmt || [];
@@ -1008,48 +792,6 @@
       </aside>
     </section>
 
-    <section id="visitorStatsSection" class="visitor-stats" aria-labelledby="visitorStatsTitle">
-      <div class="visitor-stats-header">
-        <div>
-          <h2 id="visitorStatsTitle" class="visitor-stats-title">访问统计</h2>
-          <p class="visitor-stats-copy">页面加载后会自动登记本次访问，并展示当前聚合数据。</p>
-        </div>
-        <div id="visitorStatsStatus" class="visitor-stats-status is-muted" aria-live="polite">统计加载中...</div>
-      </div>
-
-      <div class="visitor-stats-summary" aria-label="访问统计摘要">
-        <article class="visitor-stat-card">
-          <div class="visitor-stat-label">总访问人数 UV</div>
-          <div id="statsTotalUv" class="visitor-stat-value">--</div>
-          <div class="visitor-stat-note">按 visitor_id 去重统计</div>
-        </article>
-        <article class="visitor-stat-card">
-          <div class="visitor-stat-label">今日访问人数</div>
-          <div id="statsTodayUv" class="visitor-stat-value">--</div>
-          <div class="visitor-stat-note">当天独立访客数</div>
-        </article>
-        <article class="visitor-stat-card">
-          <div class="visitor-stat-label">总浏览次数 PV</div>
-          <div id="statsTotalPv" class="visitor-stat-value">--</div>
-          <div class="visitor-stat-note">累计页面浏览总量</div>
-        </article>
-      </div>
-
-      <div class="visitor-stats-grid">
-        <article class="visitor-stats-block">
-          <h2>最近 7 日趋势</h2>
-          <div id="statsTrend" class="visitor-trend-list" aria-live="polite">
-            <div class="visitor-empty">趋势数据加载中...</div>
-          </div>
-        </article>
-        <article class="visitor-stats-block">
-          <h2>来源渠道</h2>
-          <div id="statsSources" class="visitor-source-list" aria-live="polite">
-            <div class="visitor-empty">来源数据加载中...</div>
-          </div>
-        </article>
-      </div>
-    </section>
   </main>
 
   <script>
@@ -1836,6 +1578,6 @@
     renderNumbers();
     newGame();
   </script>
-  <script src="./visitor-stats.js"></script>
+  <script src="./visitor-stats.js" data-game-version="9x9"></script>
 </body>
 </html>

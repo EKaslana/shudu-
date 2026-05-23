@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数独访问统计</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2733;
+      --muted: #647386;
+      --line: #c9d3df;
+      --paper: #f7f4ec;
+      --surface: #ffffff;
+      --accent: #1c8c7c;
+      --accent-strong: #0e6d61;
+      --warn: #b94b4b;
+      --shadow: 0 18px 45px rgba(34, 46, 62, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(28, 140, 124, 0.12), transparent 38%),
+        radial-gradient(circle at 85% 12%, rgba(255, 201, 92, 0.22), transparent 25%),
+        var(--paper);
+    }
+
+    main {
+      width: min(1080px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 32px 0 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 42px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .subline {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .nav-links a,
+    .version-tab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid rgba(47, 64, 86, 0.22);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-links a:hover,
+    .version-tab:hover {
+      border-color: var(--accent);
+    }
+
+    .version-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .version-tab.is-active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .stats-shell {
+      display: grid;
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid rgba(47, 64, 86, 0.18);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .status-line {
+      min-height: 38px;
+      padding: 10px 12px;
+      border: 1px solid rgba(47, 64, 86, 0.18);
+      background: rgba(237, 248, 245, 0.9);
+      color: #284b45;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .status-line.is-error {
+      border-color: rgba(185, 75, 75, 0.22);
+      background: #fff1ee;
+      color: #8a2f2f;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card,
+    .detail-block {
+      padding: 14px;
+      border: 1px solid rgba(47, 64, 86, 0.14);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .stat-card {
+      display: grid;
+      gap: 8px;
+      min-height: 108px;
+      align-content: start;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .stat-value {
+      color: #153d38;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .detail-block h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .trend-list,
+    .source-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .trend-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .trend-label,
+    .source-label {
+      min-width: 0;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .trend-bar {
+      position: relative;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(201, 211, 223, 0.6);
+    }
+
+    .trend-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #1c8c7c, #f0b54f);
+    }
+
+    .trend-value,
+    .source-value {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .source-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(237, 248, 245, 0.9);
+      font-size: 13px;
+    }
+
+    .empty-state {
+      padding: 14px;
+      border: 1px dashed rgba(47, 64, 86, 0.22);
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      main {
+        width: min(100vw - 18px, 620px);
+        padding-top: 18px;
+      }
+
+      .topbar {
+        display: grid;
+        align-items: start;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      .summary-grid,
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 430px) {
+      h1 {
+        font-size: 34px;
+      }
+
+      .stats-shell {
+        padding: 12px;
+      }
+
+      .version-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .trend-row {
+        grid-template-columns: 58px minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div>
+        <h1>访问统计</h1>
+        <p class="subline">分别查看 9x9 与 4x4 数独版本的访问人数、浏览次数、7 日趋势和来源渠道。</p>
+      </div>
+      <nav class="nav-links" aria-label="页面导航">
+        <a href="/">9x9 游戏</a>
+        <a href="/shudu4/">4x4 游戏</a>
+      </nav>
+    </header>
+
+    <div class="version-tabs" role="tablist" aria-label="选择数独版本">
+      <button class="version-tab is-active" type="button" data-version="9x9" role="tab" aria-selected="true">9x9 数独</button>
+      <button class="version-tab" type="button" data-version="4x4" role="tab" aria-selected="false">4x4 数独</button>
+    </div>
+
+    <section class="stats-shell" aria-label="访问统计数据">
+      <div id="statsStatus" class="status-line" aria-live="polite">统计加载中...</div>
+
+      <div class="summary-grid" aria-label="访问统计摘要">
+        <article class="stat-card">
+          <div class="stat-label">总访问人数 UV</div>
+          <div id="statsTotalUv" class="stat-value">--</div>
+          <div class="stat-note">按 visitor_id 去重统计</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-label">今日访问人数</div>
+          <div id="statsTodayUv" class="stat-value">--</div>
+          <div class="stat-note">当天独立访客数</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-label">总浏览次数 PV</div>
+          <div id="statsTotalPv" class="stat-value">--</div>
+          <div class="stat-note">累计页面浏览总量</div>
+        </article>
+      </div>
+
+      <div class="details-grid">
+        <article class="detail-block">
+          <h2>最近 7 日趋势</h2>
+          <div id="statsTrend" class="trend-list" aria-live="polite">
+            <div class="empty-state">趋势数据加载中...</div>
+          </div>
+        </article>
+        <article class="detail-block">
+          <h2>来源渠道</h2>
+          <div id="statsSources" class="source-list" aria-live="polite">
+            <div class="empty-state">来源数据加载中...</div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="./stats-dashboard.js"></script>
+</body>
+</html>

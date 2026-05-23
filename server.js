@@ -1,6 +1,6 @@
 const path = require("node:path");
 const express = require("express");
-const { createStore, classifySource, normalizeSourceLabel } = require("./analytics-store");
+const { createStore, classifySource, normalizeGameVersion, normalizeSourceLabel } = require("./analytics-store");
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
@@ -37,6 +37,7 @@ app.post("/api/track", (req, res) => {
 
   const result = store.recordVisit({
     visitorId,
+    gameVersion: normalizeGameVersion(req.body?.game_version, requestPath || "/"),
     path: requestPath || "/",
     referrer,
     sourceChannel,
@@ -47,15 +48,19 @@ app.post("/api/track", (req, res) => {
   return res.status(201).json({
     ok: true,
     visit_id: result.id,
+    game_version: result.gameVersion,
     source_channel: result.sourceChannel,
     created_at: result.createdAt
   });
 });
 
 app.get("/api/stats", (req, res) => {
-  const stats = store.getStats();
+  const stats = store.getStats({
+    version: typeof req.query.version === "string" ? req.query.version : ""
+  });
   return res.json({
     ok: true,
+    version: stats.version,
     uv: stats.totals.uv,
     today_uv: stats.totals.todayUv,
     total_pv: stats.totals.pv,
