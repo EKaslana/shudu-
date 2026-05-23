@@ -1,7 +1,7 @@
 services:
   - type: web
-    name: shudu
+    name: shudu-node
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start

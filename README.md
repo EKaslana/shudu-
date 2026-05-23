@@ -25,3 +25,7 @@ npm start
   返回 4x4 版本的总访问人数 UV、今日访问人数、总浏览次数 PV、最近 7 日趋势和来源渠道聚合结果。
 
 SQLite 数据默认写入 `data/visits.db`，可通过环境变量 `SQLITE_PATH` 覆盖。
+
+## Render 部署提示
+
+Render 不允许把已创建的 static 服务直接改成 Node runtime。`render.yaml` 使用新的 `shudu-node` 服务名创建 Node Web Service；部署成功后的域名通常会变成 `https://shudu-node.onrender.com`，统计页为 `/stats.html`。
