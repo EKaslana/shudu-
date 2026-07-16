@@ -2,6 +2,13 @@
   const contextKey = "sudoku-player-context-v1";
   const currentScript = document.currentScript;
   const page = currentScript?.dataset.page || document.body.dataset.page || "";
+  const navigationDelay = 150;
+
+  function navigateWithFeedback(url) {
+    window.setTimeout(function () {
+      window.location.assign(url);
+    }, navigationDelay);
+  }
 
   function readContext() {
     for (const storage of [localStorage, sessionStorage]) {
@@ -51,7 +58,7 @@
 
     guestButton?.addEventListener("click", function () {
       writeContext({ mode: "guest", label: "游客", version: "" });
-      window.location.assign("/choose-version");
+      navigateWithFeedback("/choose-version");
     });
 
     wechatButton?.addEventListener("click", function () {
@@ -80,7 +87,7 @@
           label: context.label,
           version: version
         });
-        window.location.assign(version === "4x4" ? "/play/4x4" : "/play/9x9");
+        navigateWithFeedback(version === "4x4" ? "/play/4x4" : "/play/9x9");
       });
 
       card.addEventListener("keydown", function (event) {

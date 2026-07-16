@@ -19,12 +19,20 @@
   const markLifetime = 820;
   const maxMarks = 10;
   const maxClickDistance = 10;
+  const navigationDelay = 150;
   const pawAspectRatio = 528 / 555;
   let mouseDown = null;
 
-  function isInteractiveTarget(target) {
-    return target instanceof Element &&
-      Boolean(target.closest("a, button, input, select, textarea, .cell, [role='button']"));
+  function getInternalNavigation(event) {
+    if (!(event.target instanceof Element) || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return "";
+    }
+
+    const anchor = event.target.closest("a[href]");
+    if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) return "";
+
+    const targetUrl = new URL(anchor.href, window.location.href);
+    return targetUrl.origin === window.location.origin ? targetUrl.href : "";
   }
 
   document.addEventListener("mousedown", function (event) {
@@ -42,7 +50,7 @@
     const distance = Math.hypot(event.clientX - mouseDown.x, event.clientY - mouseDown.y);
     mouseDown = null;
 
-    if (distance > maxClickDistance || isInteractiveTarget(event.target)) return;
+    if (distance > maxClickDistance) return;
 
     while (pawLayer.children.length >= maxMarks) {
       pawLayer.firstElementChild?.remove();
@@ -69,5 +77,13 @@
     window.setTimeout(function () {
       mark.remove();
     }, markLifetime);
+
+    const navigationUrl = getInternalNavigation(event);
+    if (navigationUrl) {
+      event.preventDefault();
+      window.setTimeout(function () {
+        window.location.assign(navigationUrl);
+      }, navigationDelay);
+    }
   }, true);
 })();
