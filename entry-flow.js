@@ -93,9 +93,11 @@
   }
 
   function setupGame() {
+    const currentVersion = currentScript?.dataset.version === "4x4" ? "4x4" : "9x9";
+    const targetVersion = currentVersion === "4x4" ? "9x9" : "4x4";
     let context = readContext();
     if (!context?.mode) {
-      context = { mode: "guest", label: "游客", version: currentScript?.dataset.version || "" };
+      context = { mode: "guest", label: "游客", version: currentVersion };
       writeContext(context);
     }
 
@@ -109,8 +111,15 @@
     nav.setAttribute("aria-label", "玩家与版本导航");
     modeLabel.className = "sudoku-entry-mode";
     modeLabel.textContent = mode;
-    versionLink.href = "/choose-version";
-    versionLink.textContent = "切换版本";
+    versionLink.href = targetVersion === "4x4" ? "/play/4x4" : "/play/9x9";
+    versionLink.textContent = targetVersion === "4x4" ? "切换到 4×4" : "切换到 9×9";
+    versionLink.addEventListener("click", function () {
+      writeContext({
+        mode: context.mode,
+        label: context.label,
+        version: targetVersion
+      });
+    });
     exitLink.href = "/login";
     exitLink.textContent = "退出";
     nav.append(modeLabel, versionLink, exitLink);
