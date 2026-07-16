@@ -70,10 +70,26 @@ app.get("/api/stats", (req, res) => {
   });
 });
 
+app.get(["/", "/login"], (req, res) => {
+  res.sendFile(path.join(rootDir, "login.html"));
+});
+
+app.get("/choose-version", (req, res) => {
+  res.sendFile(path.join(rootDir, "choose-version.html"));
+});
+
+app.get("/play/9x9", (req, res) => {
+  res.sendFile(path.join(rootDir, "index.html"));
+});
+
+app.get("/play/4x4", (req, res) => {
+  res.sendFile(path.join(rootDir, "shudu4", "index.html"));
+});
+
 app.use(express.static(rootDir, { extensions: ["html"] }));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(rootDir, "index.html"));
+  res.sendFile(path.join(rootDir, "login.html"));
 });
 
 const server = app.listen(port, () => {

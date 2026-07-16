@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>选择数独版本</title>
+  <link rel="stylesheet" href="./entry.css">
+</head>
+<body class="entry-page" data-page="version-select">
+  <main class="version-shell">
+    <header class="version-topbar">
+      <div>
+        <p id="currentMode" class="entry-kicker">游客模式</p>
+        <h1 class="version-title">选择版本</h1>
+        <p class="version-copy">选择适合当前时间和难度的棋盘。</p>
+      </div>
+      <a class="entry-link" href="/login">更换进入方式</a>
+    </header>
+
+    <section class="version-grid" aria-label="数独版本">
+      <article class="version-card" data-version="9x9" data-mark="九" role="button" tabindex="0">
+        <div>
+          <div class="version-index">01 / CLASSIC</div>
+          <h2 class="version-card-title">9×9</h2>
+          <p class="version-card-copy">经典九宫数独，包含完整难度、笔记、提示、暂停和存档操作。</p>
+        </div>
+        <div class="version-card-action">
+          <span>进入经典数独</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </article>
+
+      <article class="version-card" data-version="4x4" data-mark="四" role="button" tabindex="0">
+        <div>
+          <div class="version-index">02 / QUICK</div>
+          <h2 class="version-card-title">4×4</h2>
+          <p class="version-card-copy">更短、更轻的四宫数独，适合快速练习或第一次体验。</p>
+        </div>
+        <div class="version-card-action">
+          <span>进入轻量数独</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="./entry-flow.js" data-page="version-select"></script>
+</body>
+</html>

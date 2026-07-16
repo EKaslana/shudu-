@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>进入数独</title>
+  <link rel="stylesheet" href="./entry.css">
+</head>
+<body class="entry-page" data-page="login">
+  <main class="entry-shell">
+    <section class="entry-intro" aria-labelledby="entryTitle">
+      <p class="entry-kicker">SUDOKU</p>
+      <h1 id="entryTitle" class="entry-title">数独</h1>
+      <p class="entry-lead">先选择进入方式，再选择 9×9 或 4×4。游客无需注册，登录后可在后续版本中同步通关和用时。</p>
+      <div class="entry-rule" aria-hidden="true"></div>
+    </section>
+
+    <section class="entry-panel" aria-labelledby="loginTitle">
+      <header class="entry-panel-header">
+        <h2 id="loginTitle" class="entry-panel-title">选择进入方式</h2>
+        <p class="entry-panel-copy">当前可直接使用游客模式。</p>
+      </header>
+
+      <div class="entry-actions">
+        <button id="guestEntry" class="entry-button is-primary" type="button">
+          <span class="entry-button-icon" aria-hidden="true">游</span>
+          <span class="entry-button-main">
+            <span class="entry-button-title">游客进入</span>
+            <span class="entry-button-note">无需账号，立即开始</span>
+          </span>
+          <span class="entry-button-arrow" aria-hidden="true">›</span>
+        </button>
+
+        <button id="wechatEntry" class="entry-button" type="button">
+          <span class="entry-button-icon" aria-hidden="true">微</span>
+          <span class="entry-button-main">
+            <span class="entry-button-title">微信登录</span>
+            <span class="entry-button-note">部署并配置 AppID 后启用</span>
+          </span>
+          <span class="entry-button-arrow" aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <p id="loginStatus" class="entry-status" tabindex="-1" aria-live="polite"></p>
+      <p class="entry-footnote">游客不会生成玩家账号；匿名访问统计仍用于判断页面使用情况。</p>
+    </section>
+  </main>
+
+  <script src="./entry-flow.js" data-page="login"></script>
+</body>
+</html>
