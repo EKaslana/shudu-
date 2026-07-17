@@ -71,6 +71,18 @@ body.entry-page {
   letter-spacing: -0.08em;
 }
 
+.entry-title--art {
+  max-width: min(720px, 100%);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.entry-title-image {
+  display: block;
+  width: min(100%, 720px);
+  height: auto;
+}
+
 .entry-lead {
   max-width: 500px;
   margin: 24px 0 0;
