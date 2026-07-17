@@ -4,8 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>选择数独版本</title>
-  <link rel="stylesheet" href="./entry.css">
-  <link rel="stylesheet" href="/ink-theme.css">
+  <script>
+    (function () {
+      var segments = window.location.pathname.split("/").filter(Boolean);
+      var baseHref = window.location.hostname.endsWith("github.io") && segments.length > 0
+        ? "/" + segments[0] + "/"
+        : "/";
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="stylesheet" href="entry.css">
+  <link rel="stylesheet" href="ink-theme.css">
 </head>
 <body class="entry-page" data-page="version-select">
   <main class="version-shell">
@@ -15,7 +24,10 @@
         <h1 class="version-title">选择版本</h1>
         <p class="version-copy">选择适合当前时间和难度的棋盘。</p>
       </div>
-      <a class="entry-link" href="/login">更换进入方式</a>
+      <div class="version-top-actions">
+        <a class="entry-link" href="index.html">返回入口</a>
+        <a class="entry-link" href="stats.html">查看统计</a>
+      </div>
     </header>
 
     <section class="version-grid" aria-label="数独版本">
@@ -45,7 +57,7 @@
     </section>
   </main>
 
-  <script src="./entry-flow.js" data-page="version-select"></script>
-  <script src="/ink-experience.js"></script>
+  <script src="entry-flow.js" data-page="version-select"></script>
+  <script src="ink-experience.js"></script>
 </body>
 </html>

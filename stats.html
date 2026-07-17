@@ -4,6 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>数独访问统计</title>
+  <script>
+    (function () {
+      var segments = window.location.pathname.split("/").filter(Boolean);
+      var baseHref = window.location.hostname.endsWith("github.io") && segments.length > 0
+        ? "/" + segments[0] + "/"
+        : "/";
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -279,7 +288,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="/ink-theme.css">
+  <link rel="stylesheet" href="ink-theme.css">
 </head>
 <body>
   <main>
@@ -289,9 +298,9 @@
         <p class="subline">分别查看 9x9 与 4x4 数独版本的访问人数、浏览次数、7 日趋势和来源渠道。</p>
       </div>
       <nav class="nav-links" aria-label="页面导航">
-        <a href="/play/9x9">9x9 游戏</a>
-        <a href="/play/4x4">4x4 游戏</a>
-        <a href="/login">登录页</a>
+        <a href="index.html">入口页</a>
+        <a href="play/9x9/">9x9 游戏</a>
+        <a href="play/4x4/">4x4 游戏</a>
       </nav>
     </header>
 
@@ -338,7 +347,7 @@
     </section>
   </main>
 
-  <script src="./stats-dashboard.js"></script>
-  <script src="/ink-experience.js"></script>
+  <script src="stats-dashboard.js"></script>
+  <script src="ink-experience.js"></script>
 </body>
 </html>

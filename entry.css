@@ -91,6 +91,13 @@ body.entry-page {
   line-height: 1.8;
 }
 
+.entry-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
 .entry-rule {
   width: min(320px, 72%);
   height: 3px;
@@ -229,6 +236,13 @@ body.entry-page {
   justify-content: space-between;
   gap: 18px;
   margin-bottom: 30px;
+}
+
+.version-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .version-title {
@@ -394,6 +408,10 @@ body.entry-page {
   .version-topbar {
     display: grid;
     align-items: start;
+  }
+
+  .version-top-actions {
+    justify-content: flex-start;
   }
 
   .version-grid {

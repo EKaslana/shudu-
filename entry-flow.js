@@ -58,7 +58,7 @@
 
     guestButton?.addEventListener("click", function () {
       writeContext({ mode: "guest", label: "游客", version: "" });
-      navigateWithFeedback("/choose-version");
+      navigateWithFeedback("choose-version.html");
     });
 
     wechatButton?.addEventListener("click", function () {
@@ -70,7 +70,7 @@
   function setupVersionSelect() {
     const context = readContext();
     if (!context?.mode) {
-      window.location.replace("/login");
+      window.location.replace("index.html");
       return;
     }
 
@@ -87,7 +87,7 @@
           label: context.label,
           version: version
         });
-        navigateWithFeedback(version === "4x4" ? "/play/4x4" : "/play/9x9");
+        navigateWithFeedback(version === "4x4" ? "play/4x4/" : "play/9x9/");
       });
 
       card.addEventListener("keydown", function (event) {
@@ -111,6 +111,8 @@
     const mode = context.mode === "guest" ? "游客模式" : context.label || "已登录";
     const nav = document.createElement("nav");
     const modeLabel = document.createElement("span");
+    const selectLink = document.createElement("a");
+    const statsLink = document.createElement("a");
     const versionLink = document.createElement("a");
     const exitLink = document.createElement("a");
 
@@ -118,7 +120,11 @@
     nav.setAttribute("aria-label", "玩家与版本导航");
     modeLabel.className = "sudoku-entry-mode";
     modeLabel.textContent = mode;
-    versionLink.href = targetVersion === "4x4" ? "/play/4x4" : "/play/9x9";
+    selectLink.href = "choose-version.html";
+    selectLink.textContent = "选其他版本";
+    statsLink.href = "stats.html";
+    statsLink.textContent = "访问统计";
+    versionLink.href = targetVersion === "4x4" ? "play/4x4/" : "play/9x9/";
     versionLink.textContent = targetVersion === "4x4" ? "切换到 4×4" : "切换到 9×9";
     versionLink.addEventListener("click", function () {
       writeContext({
@@ -127,9 +133,9 @@
         version: targetVersion
       });
     });
-    exitLink.href = "/login";
+    exitLink.href = "index.html";
     exitLink.textContent = "退出";
-    nav.append(modeLabel, versionLink, exitLink);
+    nav.append(modeLabel, selectLink, statsLink, versionLink, exitLink);
     document.body.append(nav);
   }
 
