@@ -318,9 +318,49 @@ select:hover {
   display: block;
   opacity: 0;
   mix-blend-mode: multiply;
-  transform-origin: center;
-  filter: drop-shadow(0 8px 18px rgba(20, 35, 45, 0.12));
-  animation: cat-paw-rise 820ms cubic-bezier(0.18, 0.84, 0.24, 1) forwards;
+  transform-origin: 50% 78%;
+  filter: drop-shadow(0 10px 18px rgba(20, 35, 45, 0.08));
+  animation: cat-paw-step 980ms cubic-bezier(0.18, 0.84, 0.24, 1) forwards;
+}
+
+.cat-paw-mark::after,
+.cat-paw-shadow,
+.cat-paw-bleed,
+.cat-paw-core {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.cat-paw-mark::after {
+  inset: 22% 12% -8%;
+  background: radial-gradient(ellipse, rgba(20, 35, 45, 0.12), transparent 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transform: translate(4px, 14px) scale(0.8, 0.55);
+  content: "";
+}
+
+.cat-paw-shadow {
+  opacity: var(--paw-shadow-opacity, 0.12);
+  filter: blur(7px);
+  transform: translate(2px, calc(var(--paw-ground-offset, 8px) + 2px))
+    scaleX(var(--paw-flip, 1)) scale(1.02, 0.92);
+}
+
+.cat-paw-bleed {
+  opacity: var(--paw-bleed-opacity, 0.22);
+  filter: blur(var(--paw-bleed-blur, 3px));
+  transform: translate(0, calc(var(--paw-ground-offset, 8px) - 1px))
+    scaleX(var(--paw-flip, 1)) scale(1.04, 0.96);
+}
+
+.cat-paw-core {
+  opacity: var(--paw-opacity, 0.82);
+  transform: translateY(var(--paw-ground-offset, 8px))
+    scaleX(var(--paw-flip, 1))
+    scaleX(var(--paw-stretch-x, 1))
+    scaleY(var(--paw-stretch-y, 1));
 }
 
 .cat-paw-mark img {
@@ -332,18 +372,50 @@ select:hover {
   -webkit-user-drag: none;
 }
 
-@keyframes cat-paw-rise {
+@keyframes cat-paw-step {
   0% {
     opacity: 0;
-    transform: translate(-50%, -42%) scale(calc(var(--paw-scale, 1) * 0.48))
-      rotate(calc(var(--paw-rotation, 0deg) - 6deg));
+    transform: translate(-50%, calc(-50% + var(--paw-drop, 10px)))
+      scale(calc(var(--paw-scale, 1) * 0.68), calc(var(--paw-scale, 1) * 0.62))
+      rotate(calc(var(--paw-rotation, 0deg) - 4deg));
   }
-  24% {
-    opacity: 0.82;
+  18% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% + var(--paw-ground-offset, 8px)))
+      scale(calc(var(--paw-scale, 1) * 1.08), calc(var(--paw-scale, 1) * 0.9))
+      rotate(calc(var(--paw-rotation, 0deg) - 1deg));
+  }
+  42% {
+    opacity: 0.92;
+    transform: translate(-50%, calc(-50% + var(--paw-ground-offset, 8px)))
+      scale(var(--paw-scale, 1), calc(var(--paw-scale, 1) * 0.98))
+      rotate(var(--paw-rotation, 0deg));
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -64%) scale(var(--paw-scale, 1)) rotate(var(--paw-rotation, 0deg));
+    transform: translate(calc(-50% + var(--paw-drift-x, 4px)), calc(-50% + var(--paw-drift-y, -18px)))
+      scale(calc(var(--paw-scale, 1) * 0.98))
+      rotate(var(--paw-rotation, 0deg));
+  }
+}
+
+.cat-paw-mark.is-left::after,
+.cat-paw-mark.is-right::after {
+  animation: cat-paw-shadow 980ms cubic-bezier(0.18, 0.84, 0.24, 1) forwards;
+}
+
+@keyframes cat-paw-shadow {
+  0% {
+    opacity: 0;
+    transform: translate(2px, 8px) scale(0.64, 0.4);
+  }
+  22% {
+    opacity: 0.18;
+    transform: translate(4px, 14px) scale(1, 0.62);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(8px, 18px) scale(1.08, 0.68);
   }
 }
 
