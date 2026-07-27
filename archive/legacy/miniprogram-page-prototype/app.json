@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/game/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "数独",
+    "navigationBarBackgroundColor": "#f3efe6",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f3efe6",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -2,7 +2,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const Database = require("better-sqlite3");
 
-const DATA_DIR = path.join(__dirname, "data");
+const PROJECT_ROOT = path.join(__dirname, "..");
+const DATA_DIR = path.join(PROJECT_ROOT, "data");
 const DB_PATH = process.env.SQLITE_PATH || path.join(DATA_DIR, "visits.db");
 
 function ensureDbDirectory() {
@@ -47,7 +48,7 @@ function normalizeGameVersion(input, requestPath = "") {
   const value = typeof input === "string" ? input.trim().toLowerCase() : "";
   if (["4x4", "4*4", "4"].includes(value)) return "4x4";
   if (["9x9", "9*9", "9"].includes(value)) return "9x9";
-  return requestPath.startsWith("/shudu4") ? "4x4" : "9x9";
+  return requestPath.startsWith("/play/4x4") || requestPath.startsWith("/shudu4") ? "4x4" : "9x9";
 }
 
 function createStore() {

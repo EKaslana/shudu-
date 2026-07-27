@@ -4,3 +4,5 @@ data/
 *.db
 *.db-shm
 *.db-wal
+.DS_Store
+project.private.config.json

@@ -1,0 +1,9 @@
+{
+  "desc": "数独微信小游戏 MVP sitemap",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

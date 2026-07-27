@@ -5,3 +5,10 @@ services:
     plan: free
     buildCommand: npm ci
     startCommand: npm start
+    envVars:
+      - key: WECHAT_MINIAPP_APP_ID
+        sync: false
+      - key: WECHAT_MINIAPP_APP_SECRET
+        sync: false
+      - key: AUTH_SESSION_TTL_DAYS
+        value: "14"

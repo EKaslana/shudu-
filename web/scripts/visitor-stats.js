@@ -4,7 +4,8 @@
   const gameVersion = currentScript?.dataset.gameVersion || inferGameVersion();
 
   function inferGameVersion() {
-    return window.location.pathname.startsWith("/shudu4") ? "4x4" : "9x9";
+    const path = window.location.pathname || "";
+    return path.startsWith("/play/4x4") || path.startsWith("/shudu4") ? "4x4" : "9x9";
   }
 
   function generateVisitorId() {

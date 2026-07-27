@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Sudoku Ink Brand";
-  src: url("/assets/ink-brand.woff2?v=2") format("woff2");
+  src: url("../../assets/ink-brand.woff2?v=2") format("woff2");
   font-display: swap;
   font-style: normal;
   font-weight: 400;
@@ -82,7 +82,7 @@ body.entry-page::before {
 }
 
 .ink-backdrop__landscape {
-  background: url("/assets/ink-landscape.jpg") center / cover no-repeat;
+  background: url("../../assets/ink-landscape.jpg") center / cover no-repeat;
   filter: saturate(0.54) contrast(0.92) brightness(1.08);
   opacity: 0.58;
   transform: scale(1.025);

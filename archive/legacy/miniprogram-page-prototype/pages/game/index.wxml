@@ -1,0 +1,124 @@
+<view class="app-shell game-page">
+  <view class="game-hero ink-card">
+    <view class="game-hero-copy">
+      <text class="hero-label">微信端 9x9 MVP</text>
+      <text class="hero-title">{{difficultyLabel}}</text>
+      <text class="hero-subtitle">这页已经接上真实共享引擎，可直接进行落子、提示、暂停、撤销和自动存档。</text>
+    </view>
+    <image class="hero-paw" src="../../assets/cat-paw-print.png" mode="aspectFit" />
+  </view>
+
+  <view class="status-ribbon">
+    <view class="ribbon-pill">
+      <text class="ribbon-label">用时</text>
+      <text class="ribbon-value">{{elapsedLabel}}</text>
+    </view>
+    <view class="ribbon-pill">
+      <text class="ribbon-label">失误</text>
+      <text class="ribbon-value">{{mistakes}} / {{mistakesLimit}}</text>
+    </view>
+    <view class="ribbon-pill">
+      <text class="ribbon-label">当前格</text>
+      <text class="ribbon-value">{{selectedCellValue}}</text>
+    </view>
+  </view>
+
+  <view class="message-strip message-{{lastMessageTone}}">
+    <text>{{lastMessage}}</text>
+  </view>
+
+  <view class="board-panel ink-card">
+    <view class="board-wrap {{paused ? 'is-paused' : ''}}">
+      <view class="pause-mask" wx:if="{{paused}}">
+        <text class="pause-title">已暂停</text>
+        <text class="pause-copy">继续后会从当前时间继续计时，棋盘内容不会丢失。</text>
+      </view>
+
+      <view class="board-grid">
+        <block wx:for="{{boardCells}}" wx:key="index">
+          <view
+            class="board-cell
+              {{item.given ? 'is-given' : ''}}
+              {{item.selected ? 'is-selected' : ''}}
+              {{item.related ? 'is-related' : ''}}
+              {{item.match ? 'is-match' : ''}}
+              {{item.error ? 'is-error' : ''}}
+              {{item.boxRight ? 'is-box-edge-right' : ''}}
+              {{item.boxBottom ? 'is-box-edge-bottom' : ''}}"
+            data-index="{{item.index}}"
+            bindtap="handleTapCell"
+          >
+            <text wx:if="{{item.value}}" class="board-value">{{item.value}}</text>
+            <view wx:else class="notes-grid">
+              <block wx:for="{{item.noteRows}}" wx:key="*this" wx:for-item="noteRow">
+                <view class="notes-row">
+                  <block wx:for="{{noteRow}}" wx:key="*this" wx:for-item="noteText">
+                    <text class="note-value">{{noteText}}</text>
+                  </block>
+                </view>
+              </block>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <view class="number-pad ink-card">
+    <text class="section-title">数字区</text>
+    <view class="number-grid">
+      <block wx:for="{{numberPad}}" wx:key="value">
+        <view
+          class="number-key {{item.active ? 'is-active' : ''}} {{item.complete && !item.active ? 'is-complete' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="handleTapNumber"
+        >
+          <text class="number-digit">{{item.label}}</text>
+          <text class="number-left">剩 {{item.remaining}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="actions-panel ink-card">
+    <text class="section-title">主操作区</text>
+    <view class="primary-action-list">
+      <block wx:for="{{primaryActions}}" wx:key="key">
+        <view class="action-chip is-primary" data-key="{{item.key}}" bindtap="handleActionTap">
+          <text class="action-label">{{item.label}}</text>
+          <text class="action-meta">{{item.meta}}</text>
+        </view>
+      </block>
+    </view>
+
+    <view class="secondary-action-list">
+      <block wx:for="{{secondaryActions}}" wx:key="key">
+        <view class="action-chip is-secondary" data-key="{{item.key}}" bindtap="handleActionTap">
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="metrics-panel ink-card">
+    <view class="metrics-head">
+      <text class="section-title">状态区</text>
+      <view class="ghost-button compact" bindtap="handleToggleGuide">
+        {{showGuide ? '收起说明' : '展开说明'}}
+      </view>
+    </view>
+
+    <view class="metrics-grid">
+      <block wx:for="{{statusCards}}" wx:key="label">
+        <view class="metric-card">
+          <text class="metric-value">{{item.value}}</text>
+          <text class="metric-label">{{item.label}}</text>
+        </view>
+      </block>
+    </view>
+
+    <view wx:if="{{showGuide}}" class="guide-note">
+      <text class="section-copy">这页已经把 `boardCells`、`numberPad`、`mistakes`、`elapsedLabel`、`paused` 和自动存档串到了真实逻辑上，后面主要继续扩 4x4、统计和微信登录适配。</text>
+    </view>
+  </view>
+</view>

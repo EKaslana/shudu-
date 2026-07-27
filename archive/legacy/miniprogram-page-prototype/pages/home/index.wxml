@@ -1,0 +1,79 @@
+<view class="app-shell home-page">
+  <view class="hero ink-card">
+    <image class="hero-wash" src="../../assets/ink-landscape.jpg" mode="aspectFill" />
+    <view class="hero-overlay"></view>
+    <view class="hero-inner">
+      <image class="hero-title" src="../../assets/title-shudu-ink.png" mode="widthFix" />
+      <text class="hero-tagline">{{tagline}}</text>
+      <text class="hero-quote">{{heroQuote}}</text>
+      <view class="hero-actions">
+        <block wx:for="{{primaryActions}}" wx:key="key">
+          <view
+            class="primary-button {{item.key === 'continue' && !hasSavedGame ? 'is-disabled' : ''}}"
+            data-key="{{item.key}}"
+            bindtap="handlePrimaryAction"
+          >
+            {{item.key === 'continue' && !hasSavedGame ? '暂无存档' : item.label}}
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <view class="panel-grid">
+    <view class="difficulty-panel ink-card">
+      <text class="section-title">难度选择</text>
+      <view class="difficulty-list">
+        <block wx:for="{{difficultyCards}}" wx:key="key">
+          <view
+            class="difficulty-item {{selectedDifficulty === item.key ? 'is-active' : ''}}"
+            data-key="{{item.key}}"
+            bindtap="handleSelectDifficulty"
+          >
+            <view class="difficulty-head">
+              <text class="difficulty-title">{{item.title}}</text>
+              <text class="difficulty-badge">{{item.badge}}</text>
+            </view>
+            <text class="difficulty-copy">{{item.subtitle}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="stats-panel ink-card">
+      <text class="section-title">续局概览</text>
+      <view class="stats-list">
+        <block wx:for="{{quickStats}}" wx:key="label">
+          <view class="stats-item">
+            <text class="stats-value">{{item.value}}</text>
+            <text class="stats-label">{{item.label}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <view class="guide-panel ink-card">
+    <view class="guide-head">
+      <text class="section-title">迁移说明</text>
+      <view class="secondary-button compact" data-key="guide" bindtap="handleSecondaryAction">
+        {{showGuide ? '收起说明' : '查看说明'}}
+      </view>
+    </view>
+
+    <view wx:if="{{showGuide}}" class="guide-body">
+      <text class="section-copy">这一版已经把 9x9 的题目生成、提示、撤销、暂停、自动存档抽到共享引擎里，对局页直接消费真实输出。</text>
+      <text class="section-copy">下一步可以继续补 4x4、水墨入口动效、统计上报和微信真实登录。</text>
+    </view>
+
+    <view wx:else class="guide-collapsed">
+      <text class="section-copy">先把开发者工具里能玩、能存、能恢复这一层做稳，再推进后面的平台能力。</text>
+    </view>
+
+    <view class="guide-actions">
+      <view class="ghost-button compact" data-key="clear" bindtap="handleSecondaryAction">
+        清空小游戏存档
+      </view>
+    </view>
+  </view>
+</view>
