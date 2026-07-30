@@ -2,6 +2,7 @@ const path = require("node:path");
 const express = require("express");
 const { createStore, classifySource, normalizeGameVersion, normalizeSourceLabel } = require("./analytics-store");
 const { createAuthSessionStore } = require("./auth-session-store");
+const { createPlayerCloudStore } = require("./player-cloud-store");
 const { createWechatAuthService } = require("./wechat-auth");
 
 function getClientIp(req) {
@@ -23,6 +24,20 @@ function readSessionToken(req) {
   return "";
 }
 
+function requireSession(authSessionStore, req, res) {
+  const token = readSessionToken(req);
+  const session = authSessionStore.readSession(token);
+  if (!session) {
+    res.status(401).json({
+      ok: false,
+      error: "session is invalid or expired",
+      code: "AUTH_SESSION_INVALID"
+    });
+    return null;
+  }
+  return session;
+}
+
 function createApp(options = {}) {
   const app = express();
   const port = Number(options.port || process.env.PORT) || 3000;
@@ -30,6 +45,9 @@ function createApp(options = {}) {
   const analyticsStore = options.analyticsStore || createStore();
   const ownsAnalyticsStore = !options.analyticsStore;
   const authSessionStore = options.authSessionStore || createAuthSessionStore(options.authSessionOptions);
+  const ownsAuthSessionStore = !options.authSessionStore;
+  const playerCloudStore = options.playerCloudStore || createPlayerCloudStore();
+  const ownsPlayerCloudStore = !options.playerCloudStore;
   const wechatAuth = options.wechatAuth || createWechatAuthService(options.wechatAuthOptions);
 
   app.set("trust proxy", true);
@@ -127,14 +145,9 @@ function createApp(options = {}) {
   });
 
   app.get("/api/auth/me", (req, res) => {
-    const token = readSessionToken(req);
-    const session = authSessionStore.readSession(token);
+    const session = requireSession(authSessionStore, req, res);
     if (!session) {
-      return res.status(401).json({
-        ok: false,
-        error: "session is invalid or expired",
-        code: "AUTH_SESSION_INVALID"
-      });
+      return;
     }
     return res.json({
       ok: true,
@@ -152,6 +165,40 @@ function createApp(options = {}) {
       authSessionStore.revokeSession(token);
     }
     return res.status(204).end();
+  });
+
+  app.get("/api/cloud/bootstrap", (req, res) => {
+    const session = requireSession(authSessionStore, req, res);
+    if (!session) {
+      return;
+    }
+    const cloud = playerCloudStore.readState(session.player.openid);
+    return res.json({
+      ok: true,
+      cloud_state: cloud.state,
+      updated_at: cloud.updatedAt
+    });
+  });
+
+  app.put("/api/cloud/state", (req, res) => {
+    const session = requireSession(authSessionStore, req, res);
+    if (!session) {
+      return;
+    }
+    const nextState = req.body?.cloud_state;
+    if (!nextState || typeof nextState !== "object") {
+      return res.status(400).json({
+        ok: false,
+        error: "cloud_state is required",
+        code: "CLOUD_STATE_REQUIRED"
+      });
+    }
+    const saved = playerCloudStore.writeState(session.player.openid, nextState);
+    return res.json({
+      ok: true,
+      cloud_state: saved.state,
+      updated_at: saved.updatedAt
+    });
   });
 
   app.get("/", (req, res) => {
@@ -174,6 +221,14 @@ function createApp(options = {}) {
     res.sendFile(path.join(rootDir, "play", "4x4", "index.html"));
   });
 
+  app.get("/play/16x16", (req, res) => {
+    res.sendFile(path.join(rootDir, "play", "16x16", "index.html"));
+  });
+
+  app.get("/play/25x25", (req, res) => {
+    res.sendFile(path.join(rootDir, "play", "25x25", "index.html"));
+  });
+
   app.use(express.static(rootDir, { extensions: ["html"] }));
 
   app.get("*", (req, res) => {
@@ -184,9 +239,17 @@ function createApp(options = {}) {
     app,
     port,
     analyticsStore,
+    authSessionStore,
+    playerCloudStore,
     closeStores() {
       if (ownsAnalyticsStore && typeof analyticsStore.close === "function") {
         analyticsStore.close();
+      }
+      if (ownsAuthSessionStore && typeof authSessionStore.close === "function") {
+        authSessionStore.close();
+      }
+      if (ownsPlayerCloudStore && typeof playerCloudStore.close === "function") {
+        playerCloudStore.close();
       }
     }
   };

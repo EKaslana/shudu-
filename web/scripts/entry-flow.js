@@ -3,6 +3,21 @@
   const currentScript = document.currentScript;
   const page = currentScript?.dataset.page || document.body.dataset.page || "";
   const navigationDelay = 150;
+  const versionTargets = {
+    "4x4": "play/4x4/",
+    "9x9": "play/9x9/",
+    "16x16": "play/16x16/",
+    "25x25": "play/25x25/"
+  };
+  const versionOrder = ["4x4", "9x9", "16x16", "25x25"];
+
+  function normalizeVersion(value) {
+    return Object.prototype.hasOwnProperty.call(versionTargets, value) ? value : "9x9";
+  }
+
+  function versionHref(value) {
+    return versionTargets[normalizeVersion(value)];
+  }
 
   function navigateWithFeedback(url) {
     window.setTimeout(function () {
@@ -87,7 +102,7 @@
           label: context.label,
           version: version
         });
-        navigateWithFeedback(version === "4x4" ? "play/4x4/" : "play/9x9/");
+        navigateWithFeedback(versionHref(version));
       });
 
       card.addEventListener("keydown", function (event) {
@@ -100,8 +115,9 @@
   }
 
   function setupGame() {
-    const currentVersion = currentScript?.dataset.version === "4x4" ? "4x4" : "9x9";
-    const targetVersion = currentVersion === "4x4" ? "9x9" : "4x4";
+    const currentVersion = normalizeVersion(currentScript?.dataset.version || document.body.dataset.version || "");
+    const currentIndex = versionOrder.indexOf(currentVersion);
+    const targetVersion = versionOrder[(currentIndex + 1) % versionOrder.length];
     let context = readContext();
     if (!context?.mode) {
       context = { mode: "guest", label: "游客", version: currentVersion };
@@ -124,8 +140,8 @@
     selectLink.textContent = "选其他版本";
     statsLink.href = "stats.html";
     statsLink.textContent = "访问统计";
-    versionLink.href = targetVersion === "4x4" ? "play/4x4/" : "play/9x9/";
-    versionLink.textContent = targetVersion === "4x4" ? "切换到 4×4" : "切换到 9×9";
+    versionLink.href = versionHref(targetVersion);
+    versionLink.textContent = "切换到 " + targetVersion;
     versionLink.addEventListener("click", function () {
       writeContext({
         mode: context.mode,

@@ -46,8 +46,12 @@ function normalizeSourceLabel(input) {
 
 function normalizeGameVersion(input, requestPath = "") {
   const value = typeof input === "string" ? input.trim().toLowerCase() : "";
+  if (["25x25", "25*25", "25"].includes(value)) return "25x25";
+  if (["16x16", "16*16", "16"].includes(value)) return "16x16";
   if (["4x4", "4*4", "4"].includes(value)) return "4x4";
   if (["9x9", "9*9", "9"].includes(value)) return "9x9";
+  if (requestPath.startsWith("/play/25x25")) return "25x25";
+  if (requestPath.startsWith("/play/16x16")) return "16x16";
   return requestPath.startsWith("/play/4x4") || requestPath.startsWith("/shudu4") ? "4x4" : "9x9";
 }
 

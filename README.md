@@ -41,6 +41,8 @@ npm start
 - `http://127.0.0.1:3000/choose-version`：版本选择
 - `http://127.0.0.1:3000/play/9x9`：9x9 数独
 - `http://127.0.0.1:3000/play/4x4`：4x4 数独
+- `http://127.0.0.1:3000/play/16x16`：16x16 数独
+- `http://127.0.0.1:3000/play/25x25`：25x25 数独
 - `http://127.0.0.1:3000/stats.html`：独立访问统计页
 
 当前游客流程已可用。小游戏端已经补上真实微信登录骨架：
@@ -152,6 +154,10 @@ export WECHAT_MINIAPP_APP_SECRET="你的小游戏 AppSecret"
   返回 9x9 版本的总访问人数 UV、今日访问人数、总浏览次数 PV、最近 7 日趋势和来源渠道聚合结果。
 - `GET /api/stats?version=4x4`
   返回 4x4 版本的总访问人数 UV、今日访问人数、总浏览次数 PV、最近 7 日趋势和来源渠道聚合结果。
+- `GET /api/stats?version=16x16`
+  返回 16x16 版本的总访问人数 UV、今日访问人数、总浏览次数 PV、最近 7 日趋势和来源渠道聚合结果。
+- `GET /api/stats?version=25x25`
+  返回 25x25 版本的总访问人数 UV、今日访问人数、总浏览次数 PV、最近 7 日趋势和来源渠道聚合结果。
 - `POST /api/auth/wechat/login`
   小游戏端提交 `wx.login` 返回的 `code`，服务端再向微信换取 `openid`，并签发本地 session token。
 - `GET /api/auth/me`

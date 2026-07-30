@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数独小游戏 · 25×25</title>
+  <script>
+    (function () {
+      var segments = window.location.pathname.split("/").filter(Boolean);
+      var baseHref = window.location.hostname.endsWith("github.io") && segments.length > 0
+        ? "/" + segments[0] + "/"
+        : "/";
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="stylesheet" href="web/styles/entry.css">
+  <link rel="stylesheet" href="web/styles/large-board.css">
+</head>
+<body data-page="game" data-version="25x25">
+  <main>
+    <header class="topbar">
+      <div>
+        <h1 id="gameTitle">二十五宫数独</h1>
+        <p id="gameSubtitle" class="subline"></p>
+        <div id="warningBadge" class="warning-badge" hidden></div>
+      </div>
+    </header>
+
+    <section class="status-strip" aria-label="对局摘要">
+      <article class="status-card">
+        <span class="status-label">当前难度</span>
+        <span id="difficultyLabel" class="status-value">普通</span>
+      </article>
+      <article class="status-card">
+        <span class="status-label">错误数</span>
+        <span id="mistakes" class="status-value">0/7</span>
+      </article>
+      <article class="status-card">
+        <span class="status-label">剩余空格</span>
+        <span id="remaining" class="status-value">0</span>
+      </article>
+      <article class="status-card">
+        <span class="status-label">提示剩余</span>
+        <span id="hintUsage" class="status-value">3/3</span>
+      </article>
+      <article class="status-card">
+        <span class="status-label">当前用时</span>
+        <span id="timer" class="status-value">00:00</span>
+      </article>
+    </section>
+
+    <section class="layout">
+      <div class="board-shell">
+        <div class="board-toolbar">
+          <select id="difficulty" class="difficulty-select" aria-label="选择难度"></select>
+          <div class="board-meta">
+            <span class="meta-pill">通关次数 <strong id="completedCount">0</strong></span>
+            <span class="meta-pill">平均用时 <strong id="averageTime">--:--</strong></span>
+          </div>
+        </div>
+
+        <div class="board-scroll">
+          <div class="board-wrap">
+            <div id="board" class="board" role="grid" aria-label="25x25 数独棋盘"></div>
+            <div id="pauseOverlay" class="pause-overlay" aria-hidden="true">已暂停</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="panel-section">
+          <h2 class="panel-title">字母盘</h2>
+          <div id="numberPad" class="number-pad"></div>
+        </section>
+
+        <section class="panel-section">
+          <h2 class="panel-title">操作区</h2>
+          <div class="actions">
+            <button id="newGame" class="action-button primary" type="button">按难度开新局</button>
+            <button id="reset" class="action-button" type="button">重开本局</button>
+            <button id="notesMode" class="action-button" type="button">笔记模式</button>
+            <button id="undo" class="action-button" type="button">撤销一步</button>
+            <button id="hint" class="action-button" type="button">提示</button>
+            <button id="erase" class="action-button" type="button">擦除</button>
+            <button id="pause" class="action-button" type="button">暂停</button>
+            <button id="saveGame" class="action-button" type="button">保存进度</button>
+            <button id="loadGame" class="action-button" type="button">读取存档</button>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2 class="panel-title">当前提示</h2>
+          <div id="message" class="message" aria-live="polite"></div>
+        </section>
+
+        <section class="panel-section">
+          <p class="panel-copy">25x25 使用 A-Y。这个版本主要面向大屏体验；Web 端已补上可游玩入口，但在小屏设备上会更依赖横向滚动。</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="web/scripts/sudoku-engines-browser.js"></script>
+  <script src="web/scripts/visitor-stats.js" data-game-version="25x25"></script>
+  <script src="web/scripts/entry-flow.js" data-page="game" data-version="25x25"></script>
+  <script src="web/scripts/large-board-game.js" data-version="25x25" data-title="二十五宫数独" data-warning="25x25 更适合 iPad 或电脑端游玩。"></script>
+  <script src="web/scripts/ink-experience.js"></script>
+</body>
+</html>

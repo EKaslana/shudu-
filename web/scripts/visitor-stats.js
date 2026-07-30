@@ -5,7 +5,10 @@
 
   function inferGameVersion() {
     const path = window.location.pathname || "";
-    return path.startsWith("/play/4x4") || path.startsWith("/shudu4") ? "4x4" : "9x9";
+    if (path.startsWith("/play/25x25")) return "25x25";
+    if (path.startsWith("/play/16x16")) return "16x16";
+    if (path.startsWith("/play/4x4") || path.startsWith("/shudu4")) return "4x4";
+    return "9x9";
   }
 
   function generateVisitorId() {

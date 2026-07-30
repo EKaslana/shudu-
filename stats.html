@@ -279,7 +279,7 @@
 
       .version-tabs {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .trend-row {
@@ -295,10 +295,12 @@
     <header class="topbar">
       <div>
         <h1>访问统计</h1>
-        <p class="subline">分别查看 9x9 与 4x4 数独版本的访问人数、浏览次数、7 日趋势和来源渠道。</p>
+        <p class="subline">分别查看 4x4、9x9、16x16 与 25x25 数独版本的访问人数、浏览次数、7 日趋势和来源渠道。</p>
       </div>
       <nav class="nav-links" aria-label="页面导航">
         <a href="index.html">入口页</a>
+        <a href="play/16x16/">16x16 游戏</a>
+        <a href="play/25x25/">25x25 游戏</a>
         <a href="play/9x9/">9x9 游戏</a>
         <a href="play/4x4/">4x4 游戏</a>
       </nav>
@@ -307,6 +309,8 @@
     <div class="version-tabs" role="tablist" aria-label="选择数独版本">
       <button class="version-tab is-active" type="button" data-version="9x9" role="tab" aria-selected="true">9x9 数独</button>
       <button class="version-tab" type="button" data-version="4x4" role="tab" aria-selected="false">4x4 数独</button>
+      <button class="version-tab" type="button" data-version="16x16" role="tab" aria-selected="false">16x16 数独</button>
+      <button class="version-tab" type="button" data-version="25x25" role="tab" aria-selected="false">25x25 数独</button>
     </div>
 
     <section class="stats-shell" aria-label="访问统计数据">
